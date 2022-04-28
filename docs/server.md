@@ -136,3 +136,9 @@ function deleteRoom(svc: RoomServiceClient, roomName: string) {
     })
 }
 ```
+
+### TODO:
+- create room in scheduled date
+- check whether user is authenticated or not before joing the room
+- assign different permission for participant
+- recording features
