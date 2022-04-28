@@ -28,31 +28,33 @@ docker run --rm -p 7880:7880 \
     --node-ip <machine-ip>
 ```
 ## Core concepts
+
 - **Room**
-  - A Room is a container for a LiveKit session
-  - Participants in the same room may subscribe to one another's tracks.
-  - When a single participant changes their tracks (e.g. mutes or unpublishes), other participants will be notified of this change
-  - Participants within the room may also exchange data with one another, including one-to-one and one-to-many deliveries.
-  - Rooms may be manually created with server APIs, or automatically created when the first participant attempts to join a room.
-  - When the last remaining participant leaves a room, it will be closed after a short delay.
+    - A Room is a container for a LiveKit session
+    - Participants in the same room may subscribe to one another's tracks.
+    - When a single participant changes their tracks (e.g. mutes or unpublishes), other participants will be notified of this change
+    - Participants within the room may also exchange data with one another, including one-to-one and one-to-many deliveries.
+    - Rooms may be manually created with server APIs, or automatically created when the first participant attempts to join a room.
+    - When the last remaining participant leaves a room, it will be closed after a short delay.
 
 - **Participant**
-  - A participant represents a user in a room.
-  - Each one is represented by a unique, client-provided `identity`, and a server-generated `sid`.
-  - the server will automatically disconnect other participants using the same identity.
-  - A `Participant` object contains metadata about its state, as well as a list of tracks they have published.
-  - There are two kinds of participants:
-    - LocalParticipant - represents the current user. Publishes tracks to the room.
-    - RemoteParticipant - represents a remote user. You may subscribe to any of the tracks they've published.
+    - A participant represents a user in a room.
+    - Each one is represented by a unique, client-provided `identity`, and a server-generated `sid`.
+    - the server will automatically disconnect other participants using the same identity.
+    - A `Participant` object contains metadata about its state, as well as a list of tracks they have published.
+    - There are two kinds of participants:
+      - LocalParticipant - represents the current user. Publishes tracks to the room.
+      - RemoteParticipant - represents a remote user. You may subscribe to any of the tracks they've published.
+
 - **Track and TrackPublication**
-  - `Track` - a wrapper around the native WebRTC MediaStreamTrack, representing a playable track.
-  - `TrackPublication` - a track that's been published to the server. If the track is subscribed by the current participant, and available for playback locally, it will have a .track attribute representing the underlying `Track` object.
-  - Having a separate `TrackPublication` construct lets us represent tracks which may not be subscribed to by the current participant.
-  - We can now list and manipulate track publications others have published, without the local participant necessarily being subscribed.
+    - `Track` - a wrapper around the native WebRTC MediaStreamTrack, representing a playable track.
+    - `TrackPublication` - a track that's been published to the server. If the track is subscribed by the current participant, and available for playback locally, it will have a .track attribute representing the underlying `Track` object.
+    - Having a separate `TrackPublication` construct lets us represent tracks which may not be subscribed to by the current participant.
+    - We can now list and manipulate track publications others have published, without the local participant necessarily being subscribed.
 
-  - [**TrackPublication attributes**](./assets/trackpublication.png)
+- [**TrackPublication attributes**](./assets/trackpublication.png)
 
-  - **Track subscription**
+- **Track subscription**
     - Each participant in the room may subscribe to one or more tracks published by other participants.
     - When autoSubscribe is set to true (default), participants will automatically subscribe to all published tracks.
     - When unsubscribed, a participant will stop receiving media for that track, and may re-subscribe to it at any time.
@@ -70,9 +72,9 @@ docker run --rm -p 7880:7880 \
 
 # Events on room
 - On successful connection to the room you can now listen to various events like:
-  - [LocalTrackPublished](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html#LocalTrackPublished)
-  - [TrackPublished](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html#TrackPublished)
-  - [Many more ...](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html)
+    - [LocalTrackPublished](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html#LocalTrackPublished)
+    - [TrackPublished](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html#TrackPublished)
+    - [Many more ...](https://docs.livekit.io/client-sdk-js/enums/RoomEvent.html)
 
 # Leaving a room
 - When leaving a room, `disconnect()` Room event got triggered
@@ -80,11 +82,10 @@ docker run --rm -p 7880:7880 \
 
 # Connectivity
 - LiveKit configures WebRTC to enable connectivity from a wide variety of network conditions. It'll try the following in order of preference.
-  
-  1. ICE over UDP: ideal connection type, used in majority of conditions
-  2. TURN with UDP (443): used when firewall blocks all other UDP port other than 443
-  3. ICE over TCP: used when network disallows UDP (i.e. over VPN or corporate firewalls)
-  4. TURN with TLS: used when firewall only allows outbound TLS connections
+    1. ICE over UDP: ideal connection type, used in majority of conditions
+    2. TURN with UDP (443): used when firewall blocks all other UDP port other than 443
+    3. ICE over TCP: used when network disallows UDP (i.e. over VPN or corporate firewalls)
+    4. TURN with TLS: used when firewall only allows outbound TLS connections
 - ICE over UDP and TCP works automatically, while TURN requires additional configurations and your own SSL certificate.
 
 # Network changes and reconnection

@@ -1,21 +1,21 @@
 # Livekit server
-- for development
-  - Generate config file
-    - `docker run --rm -v$PWD:/output livekit/generate --local
-`
-  - use livekit/livekit-server docker image and livekit.yaml [config file] generated from above and expose the necessary ports
-  ```
-  docker run -d --name livekit-server --rm -p 7880:7880 \
-          -p 7881:7881 \
-          -p 7882:7882/udp \
-          -v $PWD/livekit.yaml:/livekit.yaml \
-          livekit/livekit-server \
-          --config /livekit.yaml \
-          --dev \
-          --node-ip <machine ip>
-  ```
-- for production
-  - [read the official docs](https://docs.livekit.io/deploy)
+## For development
+    - Generate config file
+        - `docker run --rm -v$PWD:/output livekit/generate --local
+    `
+    - use livekit/livekit-server docker image and livekit.yaml [config file] generated from above and expose the necessary ports
+```
+docker run -d --name livekit-server --rm -p 7880:7880 \
+        -p 7881:7881 \
+        -p 7882:7882/udp \
+        -v $PWD/livekit.yaml:/livekit.yaml \
+        livekit/livekit-server \
+        --config /livekit.yaml \
+        --dev \
+        --node-ip <machine ip>
+```
+## For production
+    - [read the official docs](https://docs.livekit.io/deploy)
 
 ---
 # Livekit Backend server
@@ -27,8 +27,8 @@
 
 ### Long
 - set livekit host and port:
-  - hostURL -> ip of host where livekit-server is running
-  - hostPort -> port of the livekit-server
+    - hostURL -> ip of host where livekit-server is running
+    - hostPort -> port of the livekit-server
 ```
 const livekitHost = `http://${hostURL}:${hostPort}/`;
 ```
@@ -51,9 +51,9 @@ function obtainToken(roomName: string, participantName: string) {
 ```
 - verify the token using `api key` and `api secret` and the `token you obtained`
 - if the participant or room is new:
-  - respond the access token and set the token into cookie when `/join` endpoint is hitted 
+    - respond the access token and set the token into cookie when `/join` endpoint is hitted 
 - else
-  - respond with token already exists
+    - respond with token already exists
 ```
 app.post("/join", (req: Request, res: Response) => {
     const { room = "", name = "" } = req.body;
