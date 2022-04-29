@@ -2,6 +2,7 @@
     "name": "livekit-demo",
     "version": "1.0.0",
     "description": "",
+    "license": "MIT",
     "main": "index.html",
     "scripts": {
         "compile": "tsc index.ts",

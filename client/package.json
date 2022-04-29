@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.html",
+    "license": "MIT",
     "scripts": {
         "start": "parcel index.html --open --host 0.0.0.0",
         "build": "parcel build index.html"
