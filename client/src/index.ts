@@ -22,7 +22,7 @@ import { checkTrack, roomNameForm, remoteTrack, remoteTrackComponent } from "./v
 
 
 // const url = 'ws://192.168.86.115:7880' || 'ws://192.168.86.92:7880'
-const url = 'ws://192.168.86.55:7880'
+const url = 'wss://livekit.mukezhz.ml'
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTE5ODQ2MTcsImlzcyI6IkFQSUJkZFFmZENyM1c4ViIsImp0aSI6InRlc3RpZGVudGl0eSIsIm5iZiI6MTY0OTM5MjYxNywic3ViIjoidGVzdGlkZW50aXR5IiwidmlkZW8iOnsicm9vbSI6InRlc3Ryb29tIiwicm9vbUpvaW4iOnRydWV9fQ.NaL9f1FLEwabqUTY19MEiIsDnPmsBqLinDnkWj5-LYM'
 
 async function fetchToken(url, room, name) {
