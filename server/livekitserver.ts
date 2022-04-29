@@ -1,5 +1,5 @@
 import { AccessToken, RoomServiceClient, Room, TokenVerifier, ClaimGrants } from 'livekit-server-sdk';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 

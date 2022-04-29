@@ -1,9 +1,9 @@
-import express from 'express';
-import dotenv from 'dotenv';
+import * as express from 'express';
+import * as dotenv from 'dotenv';
 import { Express, Request, Response } from 'express'
 import { AccessToken, RoomServiceClient, Room, TokenVerifier, ClaimGrants, VideoGrant } from 'livekit-server-sdk';
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
+import * as cookieParser from 'cookie-parser'
+import * as cors from 'cors'
 import { createRoom, deleteRoom, roomService } from "./livekitserver"
 
 const hostURL = process.env.HOST_URL || "localhost"
