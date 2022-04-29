@@ -4,4 +4,5 @@ COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn
 COPY . .
-CMD ["yarn", "serve"]
+RUN yarn compile
+CMD ["yarn", "dev"]
