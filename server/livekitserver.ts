@@ -1,13 +1,12 @@
 import { AccessToken, RoomServiceClient, Room, TokenVerifier, ClaimGrants } from 'livekit-server-sdk';
-import * as dotenv from 'dotenv';
+import  * as dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config()
 
 const apiKey = process.env.LIVEKIT_API_KEY || "error"
 const apiSecret = process.env.LIVEKIT_API_SECRET || "errorsecret"
-const hostURL = process.env.HOST_URL || "localhost"
-const hostPort = process.env.HOST_PORT || 7880
-const livekitHost = `http://${hostURL}:${hostPort}/`;
+const livekitHost = process.env.LIVEKIT_URL || ""
+console.log(livekitHost);
 
 
 function roomService(url: string) {

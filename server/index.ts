@@ -6,9 +6,9 @@ import * as cookieParser from 'cookie-parser'
 import * as cors from 'cors'
 import { createRoom, deleteRoom, roomService } from "./livekitserver"
 
-const hostURL = process.env.HOST_URL || "localhost"
-const hostPort = process.env.HOST_PORT || 7880
-const livekitHost = `http://${hostURL}:${hostPort}/`;
+// const hostURL = process.env.HOST_URL || "localhost"
+// const hostPort = process.env.HOST_PORT || 7880
+const livekitHost = process.env.LIVEKIT_URL || ""
 
 type VerifyType = {
     video: {
@@ -32,7 +32,6 @@ app.use(cookieParser());
 app.use(cors({
     origin: true,
     credentials: true,
-    methods: "POST"
 }));
 const apiKey = process.env.LIVEKIT_API_KEY || "error"
 const apiSecret = process.env.LIVEKIT_API_SECRET || "errorsecret"
