@@ -20,12 +20,14 @@ import {
 } from "livekit-client";
 import { checkTrack, roomNameForm, remoteTrack, remoteTrackComponent } from "./views/main";
 
-
 // const url = 'ws://192.168.86.115:7880' || 'ws://192.168.86.92:7880'
-const url = 'wss://livekit.mukezhz.ml'
+// const url = 'wss://lvkserver.alpha.hamrostack.com'
+const serverUrl = process.env.SERVER_URL || ""
+const url = process.env.LIVEKIT_WS || ""
+console.log("I am here", serverUrl, url);
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTE5ODQ2MTcsImlzcyI6IkFQSUJkZFFmZENyM1c4ViIsImp0aSI6InRlc3RpZGVudGl0eSIsIm5iZiI6MTY0OTM5MjYxNywic3ViIjoidGVzdGlkZW50aXR5IiwidmlkZW8iOnsicm9vbSI6InRlc3Ryb29tIiwicm9vbUpvaW4iOnRydWV9fQ.NaL9f1FLEwabqUTY19MEiIsDnPmsBqLinDnkWj5-LYM'
 
-async function fetchToken(url, room, name) {
+async function fetchToken(url: string, room: string, name: string) {
     const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({
@@ -42,7 +44,7 @@ async function fetchToken(url, room, name) {
     return token
 }
 // const serverUrl = "http://192.168.86.115:8000" || "http://localhost:8000"
-const serverUrl = "http://192.168.86.55:8000"
+// const serverUrl = "http://livekit-api.alpha.hamrostrack.com"
 
 
 // document.getElementById("connect").addEventListener("click", videoToggle)
@@ -159,6 +161,7 @@ function getRoom() {
             resolution: VideoPresets.hd.resolution,
         }
     })
+    console.log("client side room", room);
     return room
 }
 async function connectRoom(room: Room, url: string, token: string) {
@@ -172,6 +175,7 @@ async function connectRoom(room: Room, url: string, token: string) {
     const connect = await room.connect(url, token, {
         autoSubscribe: true,
     });
+    console.log("connect room", connect);
     return { connect, room };
 }
 
@@ -341,7 +345,7 @@ function handleDisconnect() {
     console.log('disconnected from room');
 }
 
-const board = document.querySelector("#board")
+const board = document.querySelector("#board") as HTMLDivElement
 
 function createForm() {
     const form = roomNameForm()
@@ -409,6 +413,7 @@ async function createRoom() {
     })
     // body.removeChild(board)
     const createdRoom = await serverRoom.json()
+    console.log("created room server", createdRoom);
     const livekitRoom = getRoom()
     const connectedRoom = await connectRoom(livekitRoom, url, access_token)
     return { createdRoom, ...connectedRoom }
