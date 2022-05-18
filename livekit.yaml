@@ -1,0 +1,12 @@
+port: 7880
+rtc:
+    udp_port: 7882
+    tcp_port: 7881
+#    port_range_start: 40000
+#    port_range_end: 60000
+    use_external_ip: true
+keys:
+    APIBddQfdCr3W8V: 9ygEFRqrwderSvXqObXPHGyE49P6yiY0LPUC5kL3NGD
+logging:
+    json: false
+    level: debug
