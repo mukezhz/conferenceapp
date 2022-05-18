@@ -1,0 +1,106 @@
+import { TrackInfo, RoomServiceClient, Room, ParticipantInfo, DataPacket_Kind } from 'livekit-server-sdk';
+
+
+export function roomService(livekitHost: string, apiKey: string, apiSecret: string): RoomServiceClient | undefined {
+    try {
+        const svc = new RoomServiceClient(livekitHost, apiKey, apiSecret);
+        return svc
+    } catch (e) {
+        console.log("room service creation error!!!");
+    }
+}
+// const svc = roomService(livekitHost);
+
+export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 5, participantno = 10): Promise<Room | undefined> {
+    const opts = {
+        name: roomName,
+        emptyTimeout: timeout,
+        maxParticipants: participantno
+    }
+    try {
+        return await svc.createRoom(opts);
+    } catch (e) {
+        console.log("room creation error");
+    }
+}
+
+export async function deleteRoom(svc: RoomServiceClient, roomName: string): Promise<boolean> {
+    try {
+        await svc.deleteRoom(roomName)
+        return true
+    } catch (e) {
+        console.log(e, "error")
+        return false
+    }
+}
+
+export async function getParticipant(svc: RoomServiceClient, room: string, identity: string): Promise<ParticipantInfo | undefined> {
+    try {
+        return await svc.getParticipant(room, identity)
+    } catch (e) {
+        console.log('error while fetching participant!!!')
+    }
+}
+
+export async function listParticipants(svc: RoomServiceClient, room: string): Promise<ParticipantInfo[] | undefined> {
+    try {
+        return await svc.listParticipants(room)
+    } catch (e) {
+        console.log('error while listing participants!!!')
+    }
+}
+
+export async function listRooms(svc: RoomServiceClient, names?: string[]): Promise<Room[] | undefined> {
+    try {
+        // if names = undefined|'' returns all rooms
+        return await svc.listRooms(names)
+    } catch (e) {
+        console.log("error while listing the rooms!!!")
+    }
+}
+
+export async function mutePublishedTrack(svc: RoomServiceClient, room: string, identity: string, trackSid: string, muted: boolean): Promise<TrackInfo | undefined> {
+    try {
+        return await svc.mutePublishedTrack(room, identity, trackSid, muted)
+    } catch (e) {
+        console.log('error while muting publish track!!!')
+    }
+}
+
+export async function removeParticipant(svc: RoomServiceClient, room: string, identity: string): Promise<void | boolean> {
+    try {
+        await svc.removeParticipant(room, identity)
+        return true
+    } catch (e) {
+        console.log('error while removing participant!!!', identity)
+        return false
+    }
+}
+
+export async function sendData(svc: RoomServiceClient, room: string, data: Uint8Array, kind: DataPacket_Kind, destinationSids?: string[]): Promise<void | boolean> {
+    try {
+        await svc.sendData(room, data, kind)
+        return true
+    } catch (e) {
+        console.log('error while sending the data!!!')
+        return false
+    }
+}
+
+export async function updateRoomMetadata(svc: RoomServiceClient, room: string, metadata: string): Promise<Room | undefined> {
+    try {
+        return svc.updateRoomMetadata(room, metadata)
+    } catch (e) {
+        console.log('error while updating room metadata!!!')
+    }
+}
+
+export async function updateSubscriptions(svc: RoomServiceClient, room: string, identity: string, trackSids: string[], subscribe: boolean): Promise<void | boolean> {
+    try {
+        await svc.updateSubscriptions(room, identity, trackSids, subscribe)
+        return true
+    } catch (e) {
+        console.log("error while updating subscriptions!!!")
+        return false
+    }
+}
