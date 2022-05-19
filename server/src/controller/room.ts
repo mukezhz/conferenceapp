@@ -7,14 +7,18 @@ const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
 const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 export const handleRoomCreate = async (req: express.Request, res: express.Response) => {
-    const { room = "", timeout = 10, participantno = 100 } = req.body;
+    const { room = "", timeout = 10, participantno = 100, metadata = "" } = req.body;
     if (!room) return res.status(400).json({ messgae: 'room name is not provided!!!' })
     const svc = <RoomServiceClient>r.roomService(livekitHost, apiKey, apiSecret)
     const specificRoom = await r.listRooms(svc, [room]) || []
-    if (specificRoom.length) return res.status(400).json({ message: 'room already exists!!!' })
+    if (specificRoom.length) return res.status(500).json({ message: 'room already exists!!!' })
     const createdRoom = await r.createRoom(svc, room, timeout, participantno);
+    if (metadata) {
+        const updatedRoom = await r.updateRoomMetadata(svc, room, metadata)
+        return res.status(201).json({ message: "success", room: updatedRoom })
+    }
     if (!createdRoom) return res.status(500).json({ message: 'unable to create room!!!' })
-    return res.json(createdRoom);
+    return res.status(201).json({ message: "success", room: createdRoom });
 }
 
 export const handleRemoveToken = (req: express.Request, res: express.Response) => {

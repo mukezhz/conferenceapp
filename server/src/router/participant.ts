@@ -11,3 +11,6 @@ router.get('/:room', p.handleFetchRoomParticipants)
 
 // remove the participant from the room
 router.post('/remove', p.handleRemoveParticipant)
+
+// update the participant metadata and permissions
+router.post('/updateparticipant', p.handleUpdateParticipant)

@@ -2,7 +2,7 @@ import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
 import * as p from "../utils"
 
-const livekitHost =  process.env.LIVEKIT_URL || 'hostname'
+const livekitHost = process.env.LIVEKIT_URL || 'hostname'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
 const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
@@ -28,7 +28,6 @@ export const handleRemoveParticipant = async (req: express.Request, res: express
     const { room = "", identity = "" } = req.body
     if (!room) res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!identity) res.status(400).json({ message: 'identity is not provided!!!' })
-    else console.log('some unknown error!!!')
     const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
     const result = await p.removeParticipant(svc, room, identity)
     try {
@@ -37,4 +36,19 @@ export const handleRemoveParticipant = async (req: express.Request, res: express
     } catch (e) {
         return res.status(400).json({ message: 'unable to parse identity!!!' })
     }
+}
+
+export const handleUpdateParticipant = async (req: express.Request, res: express.Response) => {
+    const { room = '', identity = '', metadata = '', permissions = {} } = req.body
+    if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
+    else if (!identity) return res.status(400).json({ message: 'participant identity is not provided!!!' })
+    const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+    try {
+        const result = await p.updateParticipant(svc, room, identity, metadata, permissions)
+        if (!result) return res.status(500).json({ message: 'unable to update metadata or permissions!!!' })
+        return res.status(200).json({ message: 'success', participantInfo: result })
+    } catch (e) {
+        return res.status(500).json({ message: 'unable to update the metadata!!!' })
+    }
+
 }

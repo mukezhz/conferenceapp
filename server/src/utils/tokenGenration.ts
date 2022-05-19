@@ -64,7 +64,7 @@ export function obtainViewerToken(roomName: string, identity: string, apiKey: st
             room: roomName,
             roomJoin: true,
             canPublish: false,
-            canSubscribe: false,
+            canSubscribe: true,
             canPublishData: true
         });
         const token = at.toJwt();

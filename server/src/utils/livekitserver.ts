@@ -1,4 +1,4 @@
-import { TrackInfo, RoomServiceClient, Room, ParticipantInfo, DataPacket_Kind } from 'livekit-server-sdk';
+import { TrackInfo, RoomServiceClient, Room, ParticipantInfo, DataPacket_Kind, ParticipantPermission } from 'livekit-server-sdk';
 
 
 export function roomService(livekitHost: string, apiKey: string, apiSecret: string): RoomServiceClient | undefined {
@@ -9,8 +9,9 @@ export function roomService(livekitHost: string, apiKey: string, apiSecret: stri
         console.log("room service creation error!!!");
     }
 }
-// const svc = roomService(livekitHost);
-
+/* **************************************
+***********    ROOM     *****************
+*****************************************/
 export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 5, participantno = 10): Promise<Room | boolean> {
     const opts = {
         name: roomName,
@@ -30,10 +31,31 @@ export async function deleteRoom(svc: RoomServiceClient, roomName: string): Prom
         await svc.deleteRoom(roomName)
         return true
     } catch (e) {
-        console.log(e, "error")
+        console.log("error while deleting room!!!")
         return false
     }
 }
+
+export async function listRooms(svc: RoomServiceClient, names?: string[]): Promise<Room[] | false> {
+    try {
+        // if names = undefined|'' returns all rooms
+        return await svc.listRooms(names)
+    } catch (e) {
+        console.log("error while listing the rooms!!!")
+        return false
+    }
+}
+export async function updateRoomMetadata(svc: RoomServiceClient, room: string, metadata: string): Promise<Room | undefined> {
+    try {
+        return svc.updateRoomMetadata(room, metadata)
+    } catch (e) {
+        console.log('error while updating room metadata!!!')
+    }
+}
+
+/*****************************************
+********** PARTICIPANT********************
+******************************************/
 
 export async function getParticipant(svc: RoomServiceClient, room: string, identity: string): Promise<ParticipantInfo | undefined> {
     try {
@@ -45,20 +67,10 @@ export async function getParticipant(svc: RoomServiceClient, room: string, ident
 
 export async function listParticipants(svc: RoomServiceClient, room: string): Promise<ParticipantInfo[] | undefined> {
     try {
-        const participants =  await svc.listParticipants(room)
+        const participants = await svc.listParticipants(room)
         return participants
     } catch (e) {
         console.log('error while listing participants!!!')
-    }
-}
-
-export async function listRooms(svc: RoomServiceClient, names?: string[]): Promise<Room[] | false> {
-    try {
-        // if names = undefined|'' returns all rooms
-        return await svc.listRooms(names)
-    } catch (e) {
-        console.log("error while listing the rooms!!!")
-        return false
     }
 }
 
@@ -82,19 +94,10 @@ export async function removeParticipant(svc: RoomServiceClient, room: string, id
 
 export async function sendData(svc: RoomServiceClient, room: string, data: Uint8Array, kind: DataPacket_Kind, destinationSids?: string[]): Promise<void | boolean> {
     try {
-        await svc.sendData(room, data, kind)
-        return true
+        return await svc.sendData(room, data, kind)
     } catch (e) {
         console.log('error while sending the data!!!')
         return false
-    }
-}
-
-export async function updateRoomMetadata(svc: RoomServiceClient, room: string, metadata: string): Promise<Room | undefined> {
-    try {
-        return svc.updateRoomMetadata(room, metadata)
-    } catch (e) {
-        console.log('error while updating room metadata!!!')
     }
 }
 
@@ -104,6 +107,15 @@ export async function updateSubscriptions(svc: RoomServiceClient, room: string, 
         return true
     } catch (e) {
         console.log("error while updating subscriptions!!!")
+        return false
+    }
+}
+
+export async function updateParticipant(svc: RoomServiceClient, room: string, identity: string, metadata?: string, permission?: ParticipantPermission): Promise<ParticipantInfo | boolean> {
+    try {
+        return svc.updateParticipant(room, identity, metadata, permission)
+    } catch (e) {
+        console.log('error while updating participant metadata or permissions')
         return false
     }
 }

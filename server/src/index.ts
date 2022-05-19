@@ -14,7 +14,7 @@ app.use(cors({
     credentials: true,
 }));
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 80;
 
 app.get("/", (req: express.Request, res: express.Response) => {
     return res.status(200).json({ message: 'Hello World!!!' })
