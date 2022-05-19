@@ -11,7 +11,7 @@ export function roomService(livekitHost: string, apiKey: string, apiSecret: stri
 }
 // const svc = roomService(livekitHost);
 
-export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 5, participantno = 10): Promise<Room | undefined> {
+export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 5, participantno = 10): Promise<Room | boolean> {
     const opts = {
         name: roomName,
         emptyTimeout: timeout,
@@ -21,6 +21,7 @@ export async function createRoom(svc: RoomServiceClient, roomName: string, timeo
         return await svc.createRoom(opts);
     } catch (e) {
         console.log("room creation error");
+        return false
     }
 }
 
@@ -44,18 +45,20 @@ export async function getParticipant(svc: RoomServiceClient, room: string, ident
 
 export async function listParticipants(svc: RoomServiceClient, room: string): Promise<ParticipantInfo[] | undefined> {
     try {
-        return await svc.listParticipants(room)
+        const participants =  await svc.listParticipants(room)
+        return participants
     } catch (e) {
         console.log('error while listing participants!!!')
     }
 }
 
-export async function listRooms(svc: RoomServiceClient, names?: string[]): Promise<Room[] | undefined> {
+export async function listRooms(svc: RoomServiceClient, names?: string[]): Promise<Room[] | false> {
     try {
         // if names = undefined|'' returns all rooms
         return await svc.listRooms(names)
     } catch (e) {
         console.log("error while listing the rooms!!!")
+        return false
     }
 }
 

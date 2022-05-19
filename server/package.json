@@ -5,7 +5,7 @@
     "license": "MIT",
     "main": "index.html",
     "scripts": {
-        "compile": "tsc index.ts",
+        "compile": "tsc",
         "dev": "node index.js",
         "serve": "nodemon -e ts --exec \"tsc && node ./compile/index.js\"",
         "live": "ts-node src/index.ts"

@@ -2,9 +2,9 @@ import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
 import * as r from "../utils"
 
-const livekitHost = process.env.LIVEKIT_URL || ""
-const apiKey = process.env.LIVEKIT_API_KEY || "error"
-const apiSecret = process.env.LIVEKIT_API_SECRET || "errorsecret"
+const livekitHost = process.env.LIVEKIT_URL || 'hostname'
+const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
+const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 export const handleRoomCreate = async (req: express.Request, res: express.Response) => {
     const { room = "", timeout = 10, participantno = 100 } = req.body;
@@ -13,6 +13,7 @@ export const handleRoomCreate = async (req: express.Request, res: express.Respon
     const specificRoom = await r.listRooms(svc, [room]) || []
     if (specificRoom.length) return res.status(400).json({ message: 'room already exists!!!' })
     const createdRoom = await r.createRoom(svc, room, timeout, participantno);
+    if (!createdRoom) return res.status(500).json({ message: 'unable to create room!!!' })
     return res.json(createdRoom);
 }
 
@@ -39,6 +40,7 @@ export const handleDeleteRoom = async (req: express.Request, res: express.Respon
 export const handleRooms = async (req: express.Request, res: express.Response) => {
     const svc = <RoomServiceClient>r.roomService(livekitHost, apiKey, apiSecret)
     const rooms = await r.listRooms(svc)
+    if (!rooms) return res.status(500).json({ message: 'unable to list rooms!!!' })
     return res.status(200).json({ message: "success", rooms })
 }
 
@@ -58,6 +60,7 @@ export const handleListRoom = async (req: express.Request, res: express.Response
     const { rooms = [] } = req.body
     const svc = <RoomServiceClient>r.roomService(livekitHost, apiKey, apiSecret)
     const listsRoom = await r.listRooms(svc, rooms)
+    if (!listsRoom) return res.status(500).json({ message: 'unable to find list of users!!!' })
     return res.status(200).json({ message: "success", rooms: listsRoom })
 }
 

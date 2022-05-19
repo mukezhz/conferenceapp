@@ -2,9 +2,9 @@ import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
 import * as p from "../utils"
 
-const livekitHost = process.env.livekit_url || ""
-const apiKey = process.env.livekit_api_key || "error"
-const apiSecret = process.env.livekit_api_secret || "errorsecret"
+const livekitHost =  process.env.LIVEKIT_URL || 'hostname'
+const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
+const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 export const handleSingleParticipant = async (req: express.Request, res: express.Response) => {
     const { room = "", identity = "" } = req.params
