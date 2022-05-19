@@ -32,7 +32,7 @@ export const handleAdminToken = (req: express.Request, res: express.Response) =>
 
 
 export const handleMemberToken = (req: express.Request, res: express.Response) => {
-    const { metadata = "", participantName = "", room = "" } = req.body;
+    const { participantName = "", room = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
     const identity = `${participantName}::${uuid.v4()}`
@@ -77,6 +77,6 @@ export const handleViewerToken = (req: express.Request, res: express.Response) =
         });
         return res.json({ access_token, message: "success" })
     } catch (e) {
-        return res.status(400).json({ message: 'unable to create token for viewer!!!', error: e })
+        return res.status(400).json({ message: 'unable to create token for viewer!!!' })
     }
 }

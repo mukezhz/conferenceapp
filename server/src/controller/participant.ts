@@ -7,48 +7,66 @@ const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
 const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 export const handleSingleParticipant = async (req: express.Request, res: express.Response) => {
-    const { room = "", identity = "" } = req.params
-    if (!room || !identity) return res.status(400).json({ message: 'room or identity is not provided!!!' })
-    const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-    const participant = await p.getParticipant(svc, room, identity)
-    if (!participant) return res.status(404).json({ message: "unable to find user in the room!!!" })
-    return res.status(200).json({ message: "success", participant })
+    try {
+        const { room = "", identity = "" } = req.params
+        if (!room || !identity) return res.status(400).json({ message: 'room or identity is not provided!!!' })
+        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+        const participant = await p.getParticipant(svc, room, identity)
+        if (!participant) return res.status(404).json({ message: "unable to find user in the room!!!" })
+        return res.status(200).json({ message: "success", participant })
+    } catch (e) {
+        return res.status(500).json({ message: 'server error' })
+    }
 }
 
 export const handleFetchRoomParticipants = async (req: express.Request, res: express.Response) => {
-    const { room = "" } = req.params
-    if (!room) return res.status(400).json({ messgae: 'room name is not provided!!!' })
-    const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-    const participants = await p.listParticipants(svc, room)
-    if (!participants) return res.status(400).json({ message: 'unable to fetch participants!!!' })
-    return res.status(200).json({ message: "success", participants })
+    try {
+        const { room = "" } = req.params
+        if (!room) return res.status(400).json({ messgae: 'room name is not provided!!!' })
+        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+        const participants = await p.listParticipants(svc, room)
+        if (!participants) return res.status(400).json({ message: 'unable to fetch participants!!!' })
+        return res.status(200).json({ message: "success", participants })
+    }
+    catch (e) {
+        return res.status(500).json({ message: 'server error' })
+    }
 }
 
 export const handleRemoveParticipant = async (req: express.Request, res: express.Response) => {
-    const { room = "", identity = "" } = req.body
-    if (!room) res.status(400).json({ message: 'room name is not provided!!!' })
-    else if (!identity) res.status(400).json({ message: 'identity is not provided!!!' })
-    const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-    const result = await p.removeParticipant(svc, room, identity)
     try {
-        const participantIdentity = identity.split('::')[0]
-        if (!result) res.status(200).json({ message: `unable to remove the participant: ${participantIdentity}` })
-    } catch (e) {
-        return res.status(400).json({ message: 'unable to parse identity!!!' })
+        const { room = "", identity = "" } = req.body
+        if (!room) res.status(400).json({ message: 'room name is not provided!!!' })
+        else if (!identity) res.status(400).json({ message: 'identity is not provided!!!' })
+        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+        const result = await p.removeParticipant(svc, room, identity)
+        try {
+            const participantIdentity = identity.split('::')[0]
+            if (!result) res.status(200).json({ message: `unable to remove the participant: ${participantIdentity}` })
+        } catch (e) {
+            return res.status(400).json({ message: 'unable to parse identity!!!' })
+        }
+    }
+    catch (e) {
+        return res.status(500).json({ message: 'server error' })
     }
 }
 
 export const handleUpdateParticipant = async (req: express.Request, res: express.Response) => {
-    const { room = '', identity = '', metadata = '', permissions = {} } = req.body
-    if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
-    else if (!identity) return res.status(400).json({ message: 'participant identity is not provided!!!' })
-    const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
     try {
-        const result = await p.updateParticipant(svc, room, identity, metadata, permissions)
-        if (!result) return res.status(500).json({ message: 'unable to update metadata or permissions!!!' })
-        return res.status(200).json({ message: 'success', participantInfo: result })
-    } catch (e) {
-        return res.status(500).json({ message: 'unable to update the metadata!!!' })
+        const { room = '', identity = '', metadata = '', permissions = {} } = req.body
+        if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
+        else if (!identity) return res.status(400).json({ message: 'participant identity is not provided!!!' })
+        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+        try {
+            const result = await p.updateParticipant(svc, room, identity, metadata, permissions)
+            if (!result) return res.status(500).json({ message: 'unable to update metadata or permissions!!!' })
+            return res.status(200).json({ message: 'success', participantInfo: result })
+        } catch (e) {
+            return res.status(500).json({ message: 'unable to update the metadata!!!' })
+        }
     }
-
+    catch (e) {
+        return res.status(500).json({ message: 'server error' })
+    }
 }
