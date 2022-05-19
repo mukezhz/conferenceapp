@@ -16,6 +16,10 @@ app.use(cors({
 
 const port = process.env.PORT || 8000;
 
+app.get("/", (req: express.Request, res: express.Response) => {
+    return res.status(200).json({ message: 'Hello World!!!' })
+})
+
 app.use("/api", router.router)
 
 app.listen(port, () => {
