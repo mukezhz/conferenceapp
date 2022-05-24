@@ -6,10 +6,9 @@ const apiKey = process.env.LIVEKIT_API_KEY || "error"
 const apiSecret = process.env.LIVEKIT_API_SECRET || "errorsecret"
 
 export const handleAdminToken = (req: express.Request, res: express.Response) => {
-    const { room = "", participantName = "", metadata = "", ttl = "" } = req.body;
+    const { room = "", participantName = "", metadata = "", ttl = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
-    const identity = `${participantName}::${uuid.v4()}`
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)
@@ -32,10 +31,9 @@ export const handleAdminToken = (req: express.Request, res: express.Response) =>
 
 
 export const handleMemberToken = (req: express.Request, res: express.Response) => {
-    const { participantName = "", room = "" } = req.body;
+    const { participantName = "", room = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
-    const identity = `${participantName}::${uuid.v4()}`
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)
@@ -57,10 +55,9 @@ export const handleMemberToken = (req: express.Request, res: express.Response) =
 }
 
 export const handleViewerToken = (req: express.Request, res: express.Response) => {
-    const { room = "", participantName = "" } = req.body;
+    const { room = "", participantName = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
-    const identity = `${participantName}::${uuid.v4()}`
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)

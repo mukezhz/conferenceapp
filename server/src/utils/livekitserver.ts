@@ -6,6 +6,7 @@ export function roomService(livekitHost: string, apiKey: string, apiSecret: stri
         const svc = new RoomServiceClient(livekitHost, apiKey, apiSecret);
         return svc
     } catch (e) {
+        console.log(e)
         console.log("room service creation error!!!");
     }
 }
@@ -21,6 +22,7 @@ export async function createRoom(svc: RoomServiceClient, roomName: string, timeo
     try {
         return await svc.createRoom(opts);
     } catch (e) {
+        console.log(e)
         console.log("room creation error");
         return false
     }
@@ -31,6 +33,7 @@ export async function deleteRoom(svc: RoomServiceClient, roomName: string): Prom
         await svc.deleteRoom(roomName)
         return true
     } catch (e) {
+        console.log(e)
         console.log("error while deleting room!!!")
         return false
     }
@@ -41,6 +44,7 @@ export async function listRooms(svc: RoomServiceClient, names?: string[]): Promi
         // if names = undefined|'' returns all rooms
         return await svc.listRooms(names)
     } catch (e) {
+        console.log(e)
         console.log("error while listing the rooms!!!")
         return false
     }
@@ -49,6 +53,7 @@ export async function updateRoomMetadata(svc: RoomServiceClient, room: string, m
     try {
         return svc.updateRoomMetadata(room, metadata)
     } catch (e) {
+        console.log(e)
         console.log('error while updating room metadata!!!')
     }
 }
@@ -61,6 +66,7 @@ export async function getParticipant(svc: RoomServiceClient, room: string, ident
     try {
         return await svc.getParticipant(room, identity)
     } catch (e) {
+        console.log(e)
         console.log('error while fetching participant!!!')
     }
 }
@@ -70,6 +76,7 @@ export async function listParticipants(svc: RoomServiceClient, room: string): Pr
         const participants = await svc.listParticipants(room)
         return participants
     } catch (e) {
+        console.log(e)
         console.log('error while listing participants!!!')
     }
 }
@@ -78,6 +85,7 @@ export async function mutePublishedTrack(svc: RoomServiceClient, room: string, i
     try {
         return await svc.mutePublishedTrack(room, identity, trackSid, muted)
     } catch (e) {
+        console.log(e)
         console.log('error while muting publish track!!!')
     }
 }
@@ -87,6 +95,7 @@ export async function removeParticipant(svc: RoomServiceClient, room: string, id
         await svc.removeParticipant(room, identity)
         return true
     } catch (e) {
+        console.log(e)
         console.log('error while removing participant!!!', identity)
         return false
     }
@@ -96,6 +105,7 @@ export async function sendData(svc: RoomServiceClient, room: string, data: Uint8
     try {
         return await svc.sendData(room, data, kind)
     } catch (e) {
+        console.log(e)
         console.log('error while sending the data!!!')
         return false
     }
@@ -106,6 +116,7 @@ export async function updateSubscriptions(svc: RoomServiceClient, room: string, 
         await svc.updateSubscriptions(room, identity, trackSids, subscribe)
         return true
     } catch (e) {
+        console.log(e)
         console.log("error while updating subscriptions!!!")
         return false
     }
@@ -115,6 +126,7 @@ export async function updateParticipant(svc: RoomServiceClient, room: string, id
     try {
         return svc.updateParticipant(room, identity, metadata, permission)
     } catch (e) {
+        console.log(e)
         console.log('error while updating participant metadata or permissions')
         return false
     }
