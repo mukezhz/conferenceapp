@@ -1,0 +1,9 @@
+{
+  "room_name": "test",
+  "layout": "speaker-dark",
+  "stream": {
+    "urls": [
+      "rtmp://a.rtmp.youtube.com/live2/u5u3-ubct-b8jf-tdx1-bar4"
+    ]
+  }
+}

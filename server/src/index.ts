@@ -4,7 +4,8 @@ import * as dotenv from 'dotenv';
 import { Express } from 'express'
 import * as cookieParser from 'cookie-parser'
 import * as cors from 'cors'
-import * as router from "./router"
+import * as router from "./routes"
+import * as mongo from "./databases"
 
 const app: Express = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use(cors({
 }));
 
 const port = process.env.PORT || 80;
+mongo.connectDatabase()
 
 app.get("/", (req: express.Request, res: express.Response) => {
     return res.status(200).json({ message: 'Hello World!!!' })

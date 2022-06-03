@@ -100,3 +100,4 @@ tests/cases/user/prettier/prettier
 .eslintcache
 compile/
 build/
+mongodb-persistence/

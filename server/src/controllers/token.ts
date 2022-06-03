@@ -9,6 +9,7 @@ export const handleAdminToken = (req: express.Request, res: express.Response) =>
     const { room = "", participantName = "", metadata = "", ttl = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
+    else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)
@@ -34,6 +35,7 @@ export const handleMemberToken = (req: express.Request, res: express.Response) =
     const { participantName = "", room = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
+    else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)
@@ -58,6 +60,7 @@ export const handleViewerToken = (req: express.Request, res: express.Response) =
     const { room = "", participantName = "", identity = "" } = req.body;
     if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
     else if (!participantName) return res.status(400).json({ message: 'participant\'s name is not provided!!!' })
+    else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
         const user = t.verifyToken(token, apiKey, apiSecret)

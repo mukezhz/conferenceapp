@@ -1,5 +1,5 @@
 import * as express from "express"
-import * as t from "../controller"
+import * as t from "../controllers"
 
 export const router = express.Router()
 

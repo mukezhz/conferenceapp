@@ -1,5 +1,5 @@
 import * as express from "express"
-import { handleRoomCreate, handleDeleteRoom, handleRooms, handleListRoom, handleSingleRoom, handleUpdateRoomMetadata } from '../controller'
+import { handleRoomCreate, handleDeleteRoom, handleRooms, handleListRoom, handleSingleRoom, handleUpdateRoomMetadata } from '../controllers'
 
 export const router = express.Router()
 
