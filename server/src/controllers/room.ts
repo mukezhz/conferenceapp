@@ -8,8 +8,8 @@ const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 export const handleRoomCreate = async (req: express.Request, res: express.Response) => {
     try {
-        const { room = "", timeout = 10, participantno = 100, metadata = "" } = req.body;
-        if (!room) return res.status(400).json({ messgae: 'room name is not provided!!!' })
+        const { room = "", timeout = 86400, participantno = 100, metadata = "" } = req.body;
+        if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
         const svc = <RoomServiceClient>r.roomService(livekitHost, apiKey, apiSecret)
         const specificRoom = await r.listRooms(svc, [room]) || []
         if (specificRoom.length) return res.status(500).json({ message: 'room already exists!!!' })

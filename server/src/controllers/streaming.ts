@@ -2,7 +2,7 @@ import * as livekit from 'livekit-server-sdk';
 import * as express from "express"
 import * as r from "../utils"
 import * as egress from "livekit-server-sdk/dist/proto/livekit_egress"
-import * as service from "../databases/services"
+import * as service from "../databases/mongo/services"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
@@ -57,7 +57,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
             /** (default 4500) */
             videoBitrate: 4500
         }
-        const egressInfo: egress.EgressInfo | undefined = await r.startStreamEgress(ec, platform, streamKey, roomName, layout, 0, audioOnly, videoOnly, customBaseUrl)
+        const egressInfo: egress.EgressInfo | undefined = await r.startStreamEgress(ec, platform, streamKey, roomName, layout, 1, audioOnly, videoOnly, customBaseUrl)
         if (!egressInfo) return res.status(500).json({ message: 'unable to start streaming!!!' })
         const stream = new service.StreamService()
         try {

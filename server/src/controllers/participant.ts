@@ -24,7 +24,7 @@ export const handleSingleParticipant = async (req: express.Request, res: express
 export const handleFetchRoomParticipants = async (req: express.Request, res: express.Response) => {
     try {
         const { room = "" } = req.params
-        if (!room) return res.status(400).json({ messgae: 'room name is not provided!!!' })
+        if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
         const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
         const participants = await p.listParticipants(svc, room)
         if (!participants) return res.status(400).json({ message: 'unable to fetch participants!!!' })

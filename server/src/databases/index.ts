@@ -1,2 +1,2 @@
-export * from "./init"
-export * from "./model"
+export * from "./mongo/init"
+export * from "./mongo/model"

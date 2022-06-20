@@ -11,9 +11,12 @@ const app: Express = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: true,
+    origin: "*",
     credentials: true,
+    allowedHeaders: "*",
+    exposedHeaders: "*"
 }));
+
 
 const port = process.env.PORT || 80;
 mongo.connectDatabase()
