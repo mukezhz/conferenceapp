@@ -74,6 +74,26 @@ export function obtainViewerToken(roomName: string, identity: string, apiKey: st
     }
 }
 
+export function obtainWaitingToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string) {
+    try {
+        const at = new AccessToken(apiKey, apiSecret, {
+            identity: identity,
+            name: participantName
+        });
+        at.addGrant({
+            room: roomName,
+            roomJoin: true,
+            canPublish: false,
+            canSubscribe: false,
+            canPublishData: false
+        });
+        const token = at.toJwt();
+        return token
+    } catch (e) {
+        console.log("error while obtaining token for waiting!!!")
+    }
+}
+
 export function verifyToken(token = "", apiKey: string, apiSecret: string) {
     const tokenController = new TokenVerifier(apiKey, apiSecret)
     const verify = <VerifyType>tokenController.verify(token)

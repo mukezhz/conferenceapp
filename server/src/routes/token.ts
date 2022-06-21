@@ -12,5 +12,8 @@ router.post("/membertoken", t.handleMemberToken)
 // fetch a token with viewer privilages
 router.post("/viewertoken", t.handleViewerToken)
 
+// fetch a token with viewer privilages
+router.post("/waitingtoken", t.handleWaitingToken)
+
 // remove a token from cookie
 router.get('/removetoken', t.handleRemoveToken)
