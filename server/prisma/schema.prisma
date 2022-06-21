@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Meeting {
+  id                   Int        @id @default(autoincrement())
+  uuid                 String     @unique @default(uuid())
+  room                 String     @unique
+  title                String
+  user_id              String     @unique 
+  description          String?
+  participants         Json       @default("{}")
+  start_data           DateTime   @default(now())
+  status               StatusRole @default(NEW)
+  cover_image          String
+  app_id               String
+  country              String
+  waiting_room_enabled Boolean    @default(true)
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+
+  @@map(name: "meetings")
+}
+
+enum StatusRole {
+  NEW
+  PENDING
+  CANCEL
+}
