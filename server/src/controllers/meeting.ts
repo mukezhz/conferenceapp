@@ -127,7 +127,25 @@ export const handleUpdateWaiting = async (req: express.Request, res: express.Res
 
 export const handleJoinMeeting = async (req: express.Request, res: express.Response) => {
     const { access_token } = req.headers
-    const { uuid } = req.body
+    const { name = '', identity = '', uuid, metadata = '', ttl = "10" } = req.body
+    const search = await meeting.findByUUID(uuid)
+    if (!search?.room) return res.status(404).json({ message: 'room doesn\'t exists!!!' })
+    if (!access_token) {
+        // user is not login
+        if (!uuid) return res.status(400).json({ message: 'room uuid is not provided!!!' })
+        else if (!name) return res.status(400).json({ message: 'user name is not provided!!!' })
+        else if (!identity) return res.status(400).json({ message: 'user identity is not provided!!!' })
+        // if waiting=true return waiting token
+        if (search?.waiting_room_enabled) return res.status(200).json({
+            message: 'success',
+            access_token: token.obtainWaitingToken(search.room, identity, apiKey, apiSecret, name) || 'error'
+        })
+        // if waiting=false return member token
+        return res.status(200).json({
+            message: 'success',
+            access_token: token.obtainMemberToken(search.room, identity, apiKey, apiSecret, name) || 'error'
+        })
+    }
     if (!uuid) return res.status(400).json({ message: 'room uuid is not provided!!!' })
     const config = {
         method: 'get',
@@ -140,37 +158,34 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
     };
     try {
         const result = await axios(config)
-        const user_id = result.data.user_profile.user_id
-        const search = await meeting.findByUUID(uuid)
+        const user_id = result.data?.user_profile.user_id
+        const userName = result.data?.user_profile.displayName
         const { hosts = [], members = [] } = search?.participants as { hosts: [], members: [] }
+
         const searchHost = hosts.filter(d => d === user_id)
-        if (searchHost.length) return res.send("admin token!!!")
+        if (searchHost.length) return res.status(200).json(
+            {
+                message: 'success',
+                access_token: token.obtainAdminToken(search.room, user_id, apiKey, apiSecret, userName, metadata, ttl) || 'error'
+            })
+
         const searchMember = members.filter(d => d === user_id)
-        if (searchMember.length) return res.send("member token!!!")
-        if (search?.waiting_room_enabled) return res.send('waiting token!!!')
-        else return res.send('member token!!!')
+        if (searchMember.length) return res.status(200).json({
+            message: 'success',
+            access_token: token.obtainMemberToken(search.room, user_id, apiKey, apiSecret, userName) || 'error'
+        })
         // if waiting=true return waiting token
+        if (search?.waiting_room_enabled) return res.status(200).json({
+            message: 'success',
+            access_token: token.obtainWaitingToken(search.room, user_id, apiKey, apiSecret, userName) || 'error'
+        })
         // if waiting=false return member token
-        // if user_id not in list but is new id append it to member list
-        res.send("member token!!!")
-        console.log(hosts, members)
-        // const roomSearch = await meeting.findByRoom(room)
-        // console.log(roomSearch)
-        if (!search) console.log('user doesn\'t exists in table!!!')
-        const { name }: { name: string } = req.body
+        return res.status(200).json({
+            message: 'success',
+            access_token: token.obtainMemberToken(search.room, user_id, apiKey, apiSecret, userName) || 'error'
+        })
     } catch (e) {
         console.log(e)
         return res.status(401).json({ message: "unauthorized user!!!" })
-    }
-    try {
-        // TODO: return livekit server url based on country
-        // TODO: if waiting room not enabled just let member to enter
-        // TODO: if waiting room is enabled enter the user but don't let them to publish or subscribe
-        // TODO: validate access_token and get user
-
-        return res.json({ message: "success" })
-    } catch (e) {
-        console.log(e)
-        return res.status(500).json({ message: 'server error only [true or false] is possible!!!' })
     }
 }
