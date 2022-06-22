@@ -22,4 +22,4 @@ router.patch('/status', m.handleUpdateStatus)
 router.patch('/waiting', m.handleUpdateWaiting)
 
 // update waiting room enabled
-router.patch('/join', m.handleJoinMeeting)
+router.post('/join', m.handleJoinMeeting)

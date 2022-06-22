@@ -1,6 +1,8 @@
+import axios from "axios";
 import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
 import { meeting } from "../databases";
+import * as token from "../utils"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
@@ -60,7 +62,6 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
 }
 
 export const handleFindAll = async (req: express.Request, res: express.Response) => {
-    // TODO: convert from post to get
     const { page = "0", limit = "1" } = req.query
     try {
         const result = await meeting.findAll(page, limit)
@@ -125,16 +126,49 @@ export const handleUpdateWaiting = async (req: express.Request, res: express.Res
 }
 
 export const handleJoinMeeting = async (req: express.Request, res: express.Response) => {
+    const { access_token } = req.headers
+    const { uuid } = req.body
+    if (!uuid) return res.status(400).json({ message: 'room uuid is not provided!!!' })
+    const config = {
+        method: 'get',
+        url: 'https://everestbackend-api.hamropatro.com/account/profiles',
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'grpc-metadata-app-id': 'hamropatro',
+            'grpc-metadata-web-api-key': 'ce15f30b-fb9b-4baf-b0f1-6ab88b3baa2f'
+        }
+    };
+    try {
+        const result = await axios(config)
+        const user_id = result.data.user_profile.user_id
+        const search = await meeting.findByUUID(uuid)
+        const { hosts = [], members = [] } = search?.participants as { hosts: [], members: [] }
+        const searchHost = hosts.filter(d => d === user_id)
+        if (searchHost.length) return res.send("admin token!!!")
+        const searchMember = members.filter(d => d === user_id)
+        if (searchMember.length) return res.send("member token!!!")
+        if (search?.waiting_room_enabled) return res.send('waiting token!!!')
+        else return res.send('member token!!!')
+        // if waiting=true return waiting token
+        // if waiting=false return member token
+        // if user_id not in list but is new id append it to member list
+        res.send("member token!!!")
+        console.log(hosts, members)
+        // const roomSearch = await meeting.findByRoom(room)
+        // console.log(roomSearch)
+        if (!search) console.log('user doesn\'t exists in table!!!')
+        const { name }: { name: string } = req.body
+    } catch (e) {
+        console.log(e)
+        return res.status(401).json({ message: "unauthorized user!!!" })
+    }
     try {
         // TODO: return livekit server url based on country
         // TODO: if waiting room not enabled just let member to enter
         // TODO: if waiting room is enabled enter the user but don't let them to publish or subscribe
         // TODO: validate access_token and get user
-        const { uuid, waiting }: { uuid: string, waiting: boolean } = req.body
-        if (waiting === null) return res.status(400).json({ message: "waiting has not been provided!!!" })
-        const result = await meeting.updateWaitingRoom(uuid, waiting)
-        if (!result) return res.status(200).json({ message: "unable to update waiting room enabled!!!" })
-        return res.json({ message: "success", data: result })
+
+        return res.json({ message: "success" })
     } catch (e) {
         console.log(e)
         return res.status(500).json({ message: 'server error only [true or false] is possible!!!' })
