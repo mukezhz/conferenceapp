@@ -1,3 +1,4 @@
+import * as util from "util"
 import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
 import * as t from "../utils/livekitserver"
@@ -50,7 +51,7 @@ export const handleUpdateSubscription = async (req: express.Request, res: expres
 export const handleSendData = async (req: express.Request, res: express.Response) => {
     try {
         const { room = "", data = "", kind = 0, destinationSids = [] } = req.body
-        const newData = new TextEncoder().encode(data)
+        const newData = new util.TextEncoder().encode(data)
         if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
         else if (!data) return res.status(400).json({ message: 'data is not provided!!!' })
         const svc = <RoomServiceClient>t.roomService(livekitHost, apiKey, apiSecret)

@@ -11,22 +11,23 @@ datasource db {
 }
 
 model Meeting {
-  id                   Int        @id @default(autoincrement())
-  uuid                 String     @unique @default(uuid())
+  id                   String     @id @default(uuid())
   room                 String     @unique
   title                String
-  user_id              String     @unique 
   description          String?
   participants         Json       @default("{}")
-  start_data           DateTime   @default(now())
+  start_date           DateTime   @default(now())
   status               StatusRole @default(NEW)
-  cover_image          String
+  cover_image          String?
   app_id               String
   country              String
   waiting_room_enabled Boolean    @default(true)
   created_at           DateTime   @default(now())
   updated_at           DateTime   @updatedAt
+  count                Int        @default(autoincrement())
 
+  JoinCode JoinCode[]
+  Waiting  Waiting[]
   @@map(name: "meetings")
 }
 
@@ -34,4 +35,27 @@ enum StatusRole {
   NEW
   PENDING
   CANCEL
+}
+
+model JoinCode {
+  meeting_id String
+  Meeting    Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
+  expire_time   DateTime @default(now())
+  identity   String
+  join_code  String   @unique
+
+  @@id([meeting_id, identity], name: "join_code_identifier")
+  @@map(name: "join_codes")
+}
+
+model Waiting {
+  meeting_id String
+  Meeting    Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
+  user_id    String
+  user_name  String
+  token      String
+  status  String
+
+  @@id([meeting_id, user_id], name: "waiting_identifier")
+  @@map(name: "waiting_users")
 }

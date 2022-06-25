@@ -1,6 +1,5 @@
-import prisma from "../init";
-
-const { meeting } = prisma
+import * as prisma from "../init";
+const { meeting } = prisma.default
 
 export const create = async (data: any) => {
     try {
@@ -8,8 +7,8 @@ export const create = async (data: any) => {
             data: data
         })
     } catch (e: any) {
-        console.log("[service]: error while creating!!!", e)
-        throw new Error("unique containt vialoation!!!")
+        console.error(e, "[service]: error while creating!!!")
+        throw new Error("something went wrong!!!")
     }
 }
 
@@ -18,11 +17,12 @@ export const remove = async (uuid: string) => {
     try {
         return await meeting.delete({
             where: {
-                uuid: uuid,
+                id: uuid,
             },
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while removing!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -30,12 +30,13 @@ export const update = async (data: any) => {
     try {
         return await meeting.update({
             where: {
-                uuid: data.uuid,
+                id: data.uuid,
             },
             data: data,
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while updating!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -43,15 +44,15 @@ export const updateStatus = async (uuid: string, status: any) => {
     try {
         return await meeting.update({
             where: {
-                uuid: uuid,
+                id: uuid,
             },
             data: {
                 status: status
             },
         })
     } catch (e: any) {
-        console.log(e)
-        throw new Error(e.message)
+        console.error(e, "[service]: error while updating status!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -59,14 +60,15 @@ export const updateWaitingRoom = async (uuid: string, value: boolean) => {
     try {
         return await meeting.update({
             where: {
-                uuid: uuid,
+                id: uuid,
             },
             data: {
                 waiting_room_enabled: value
             },
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while updating waiting room!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -74,14 +76,15 @@ export const updateParticipant = async (uuid: string, participants: any) => {
     try {
         return await meeting.update({
             where: {
-                uuid: uuid,
+                id: uuid,
             },
             data: {
                 participants: participants
             },
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while updating participant!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -92,19 +95,20 @@ export const addParticipant = async (uuid: string, participants: any) => {
                 participants
             },
             where: {
-                uuid: uuid
+                id: uuid
             }
         })
         return await meeting.update({
             where: {
-                uuid: uuid,
+                id: uuid,
             },
             data: {
                 participants: { ...uniqueParticipants, ...participants }
             },
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while adding participant!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -119,7 +123,8 @@ export const findAll = async (cursor: any, limit: any) => {
             take: lim
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while finding all!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
@@ -129,33 +134,35 @@ export const findOne = async (data: any) => {
             where: data,
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while finding one!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
-export const findByUUID = async (uuid: string) => {
+export const findById = async (id: string) => {
     try {
         return await meeting.findUnique({
             where: {
-                uuid: uuid
+                id: id
             }
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while finding by id!!!")
+        throw new Error('something went wrong!!!')
     }
 }
 
-export const findByUserId = async (userid: string) => {
-    try {
-        return await meeting.findUnique({
-            where: {
-                user_id: userid
-            }
-        })
-    } catch (e: any) {
-        throw new Error(e.message)
-    }
-}
+// export const findByUserId = async (userid: string) => {
+//     try {
+//         return await meeting.findUnique({
+//             where: {
+//                 user_id: userid
+//             }
+//         })
+//     } catch (e: any) {
+//         throw new Error(e.message)
+//     }
+// }
 
 export const findByRoom = async (room: string) => {
     try {
@@ -165,6 +172,7 @@ export const findByRoom = async (room: string) => {
             }
         })
     } catch (e: any) {
-        throw new Error(e.message)
+        console.error(e, "[service]: error while finding by room!!!")
+        throw new Error('something went wrong!!!')
     }
 }
