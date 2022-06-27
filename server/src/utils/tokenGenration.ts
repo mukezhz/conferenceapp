@@ -70,7 +70,7 @@ export function obtainViewerToken(roomName: string, identity: string, apiKey: st
         const token = at.toJwt();
         return token
     } catch (e) {
-        console.log("error while obtaining token for viewer!!!")
+        console.error("error while obtaining token for viewer!!!")
     }
 }
 
@@ -90,7 +90,7 @@ export function obtainWaitingToken(roomName: string, identity: string, apiKey: s
         const token = at.toJwt();
         return token
     } catch (e) {
-        console.log("error while obtaining token for waiting!!!")
+        console.error("error while obtaining token for waiting!!!")
     }
 }
 

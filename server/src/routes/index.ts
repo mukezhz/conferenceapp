@@ -5,6 +5,7 @@ import * as tokenRouter from "./token"
 import * as trackRouter from "./track"
 import * as recordingRouter from "./streaming"
 import * as meetingRouter from "./meeting"
+import * as waitingRouter from "./waiting"
 
 import * as express from "express"
 
@@ -17,3 +18,4 @@ router.use('/tokens', tokenRouter.router)
 router.use('/tracks', trackRouter.router)
 router.use('/streamings', recordingRouter.router)
 router.use('/meetings', meetingRouter.router)
+router.use('/waitings', waitingRouter.router)

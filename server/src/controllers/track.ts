@@ -18,8 +18,8 @@ export const handleMutePublishedTrack = async (req: express.Request, res: expres
         if (!trackinfo) return res.status(500).json({ message: "unable to mute the track !!!" })
         return res.status(200).json({ message: "success" })
     } catch (e) {
-        console.log(e)
-        console.log("handle mute publish track")
+        console.error(e)
+        console.error("handle mute publish track")
         return res.status(500).json({ message: "server error!!!" })
     }
 }
@@ -42,8 +42,8 @@ export const handleUpdateSubscription = async (req: express.Request, res: expres
         if (!result) return res.status(500).json({ message: 'unable to update subscriptions !!!' })
         return res.status(301).json({ message: 'success' })
     } catch (e) {
-        console.log(e)
-        console.log("handle update subscription")
+        console.error(e)
+        console.error("handle update subscription")
         return res.status(500).json({ message: "server error!!!" })
     }
 }

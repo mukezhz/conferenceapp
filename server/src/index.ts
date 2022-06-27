@@ -24,5 +24,5 @@ app.get("/", (req: express.Request, res: express.Response) => {
 app.use("/api", router.router)
 
 app.listen(port, () => {
-    console.log("Listening on port ", port);
+    console.error("Listening on port ", port);
 })

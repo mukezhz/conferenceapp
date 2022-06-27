@@ -15,8 +15,8 @@ export const handleSingleParticipant = async (req: express.Request, res: express
         if (!participant) return res.status(404).json({ message: "unable to find user in the room!!!" })
         return res.status(200).json({ message: "success", participant })
     } catch (e) {
-        console.log(e)
-        console.log("handle single participant")
+        console.error(e)
+        console.error("handle single participant")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -31,8 +31,8 @@ export const handleFetchRoomParticipants = async (req: express.Request, res: exp
         return res.status(200).json({ message: "success", participants })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle fetch room participants")
+        console.error(e)
+        console.error("handle fetch room participants")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -52,7 +52,7 @@ export const handleRemoveParticipant = async (req: express.Request, res: express
         }
     }
     catch (e) {
-        console.log(e)
+        console.error(e)
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -72,7 +72,7 @@ export const handleUpdateParticipant = async (req: express.Request, res: express
         }
     }
     catch (e) {
-        console.log(e)
+        console.error(e)
         return res.status(500).json({ message: 'server error' })
     }
 }

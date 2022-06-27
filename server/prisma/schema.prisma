@@ -17,7 +17,7 @@ model Meeting {
   description          String?
   participants         Json       @default("{}")
   start_date           DateTime   @default(now())
-  status               StatusRole @default(NEW)
+  status               StatusMeeting @default(NEW)
   cover_image          String?
   app_id               String
   country              String
@@ -31,18 +31,17 @@ model Meeting {
   @@map(name: "meetings")
 }
 
-enum StatusRole {
+enum StatusMeeting {
   NEW
-  PENDING
   CANCEL
 }
 
 model JoinCode {
-  meeting_id String
-  Meeting    Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
-  expire_time   DateTime @default(now())
-  identity   String
-  join_code  String   @unique
+  meeting_id  String
+  Meeting     Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
+  expire_time DateTime @default(now())
+  identity    String
+  join_code   String   @unique
 
   @@id([meeting_id, identity], name: "join_code_identifier")
   @@map(name: "join_codes")
@@ -53,9 +52,15 @@ model Waiting {
   Meeting    Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
   user_id    String
   user_name  String
-  token      String
-  status  String
+  token      String?
+  status     StatusWaiting @default(WAITING)
 
   @@id([meeting_id, user_id], name: "waiting_identifier")
   @@map(name: "waiting_users")
+}
+
+enum StatusWaiting {
+  WAITING
+  APPROVED
+  REJECTED
 }

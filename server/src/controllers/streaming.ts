@@ -81,7 +81,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
         // })
         return res.status(200).json({ message: 'success', egress: egressInfo })
     } catch (e) {
-        console.log(e)
+        console.error(e)
         console.log('[Controller]: error while handling start live stream!!!')
         return res.status(500).json({ message: 'error while starting stream!!!' })
     }
@@ -97,7 +97,7 @@ export const handleStopLiveStream = async (req: express.Request, res: express.Re
         const result = await stream.updateStreamEndDate(egressId, new Date().toISOString())
         return res.status(200).json({ message: 'success', egress: result })
     } catch (e) {
-        console.log(e)
+        console.error(e)
         console.log('[Controller]: error while handling stop live stream!!!')
         return res.status(500).json({ message: 'error while stopping stream!!!' })
     }
@@ -117,7 +117,7 @@ export const handleUpdateStream = async (req: express.Request, res: express.Resp
         if (!egressInfo) return res.status(500).json({ message: 'unable to update streaming!!!' })
         return res.status(200).json({ message: 'success' })
     } catch (e) {
-        console.log(e)
+        console.error(e)
         console.log('[Controller]: error while handling update stream!!!')
         return res.status(500).json({ message: 'error while updating stream!!!' })
     }
@@ -131,7 +131,7 @@ export const handleGetStreamInfo = async (req: express.Request, res: express.Res
         if (!streamInfos) return res.status(500).json({ message: 'unable to find stream!!!' })
         return res.status(200).json({ message: 'success', streams: streamInfos })
     } catch (e) {
-        console.log(e)
+        console.error(e)
         console.log('[Controller]: error while handling update stream!!!')
         return res.status(500).json({ message: 'error while fetching stream info!!!' })
     }

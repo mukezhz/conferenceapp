@@ -22,8 +22,8 @@ export const handleRoomCreate = async (req: express.Request, res: express.Respon
         return res.status(201).json({ message: "success", room: createdRoom });
     }
     catch (e) {
-        console.log(e)
-        console.log("handle room create")
+        console.error(e)
+        console.error("handle room create")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -37,8 +37,8 @@ export const handleRemoveToken = (req: express.Request, res: express.Response) =
         } return res.status(400).json({ message: 'token does not exist please create token first!!!' })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle room token")
+        console.error(e)
+        console.error("handle room token")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -56,8 +56,8 @@ export const handleDeleteRoom = async (req: express.Request, res: express.Respon
         return res.status(200).json({ message: `room: ${room} delete successfully!!!` })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle delete room")
+        console.error(e)
+        console.error("handle delete room")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -70,8 +70,8 @@ export const handleRooms = async (req: express.Request, res: express.Response) =
         return res.status(200).json({ message: "success", rooms })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle rooms")
+        console.error(e)
+        console.error("handle rooms")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -89,8 +89,8 @@ export const handleSingleRoom = async (req: express.Request, res: express.Respon
         return res.status(200).json({ message: "success", room: specificRoom[0] })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle single room")
+        console.error(e)
+        console.error("handle single room")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -104,8 +104,8 @@ export const handleListRoom = async (req: express.Request, res: express.Response
         return res.status(200).json({ message: "success", rooms: listsRoom })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle list room")
+        console.error(e)
+        console.error("handle list room")
         return res.status(500).json({ message: 'server error' })
     }
 }
@@ -121,8 +121,8 @@ export const handleUpdateRoomMetadata = async (req: express.Request, res: expres
         return res.status(201).json({ message: 'success', room: updatedRoom })
     }
     catch (e) {
-        console.log(e)
-        console.log("handle update room metadata")
+        console.error(e)
+        console.error("handle update room metadata")
         return res.status(500).json({ message: 'server error' })
     }
 }
