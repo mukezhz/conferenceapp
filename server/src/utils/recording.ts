@@ -68,7 +68,7 @@ export const getEgressClient = (host: string, apiKey: string, apiSecret: string)
         return new livekit.EgressClient(host, apiKey, apiSecret)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while getting recoding service client!!!')
+        console.error('[Utils]: error while getting recoding service client!!!')
         return false
     }
 }
@@ -78,7 +78,7 @@ export const listEgress = async (ec: livekit.EgressClient, roomName?: string): P
         return await ec.listEgress(roomName)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while listing egress!!!')
+        console.error('[Utils]: error while listing egress!!!')
         return false
     }
 }
@@ -89,7 +89,7 @@ export const startRoomCompositeEgress = async (ec: livekit.EgressClient, roomNam
         return await ec.startRoomCompositeEgress(roomName, layout, output, options, audioOnly, videoOnly, customBaseUrl)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while starting room composite egress!!!')
+        console.error('[Utils]: error while starting room composite egress!!!')
     }
 }
 
@@ -119,7 +119,7 @@ export const startStreamEgress = async (ec: livekit.EgressClient, platform: stri
         return await startRoomCompositeEgress(ec, roomName, layout, output, options, audioOnly, videoOnly, customBaseUrl)
     } catch (e) {
         // console.error(e)
-        console.log('[Utils]: error while starting streaming using egress!!!')
+        console.error('[Utils]: error while starting streaming using egress!!!')
     }
 }
 
@@ -128,7 +128,7 @@ export const stopEgress = async (ec: livekit.EgressClient, egressId: string): Pr
         return await ec.stopEgress(egressId)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while stopping egress!!!')
+        console.error('[Utils]: error while stopping egress!!!')
         return false
     }
 }
@@ -138,7 +138,7 @@ export const updateLayout = async (ec: livekit.EgressClient, egressId: string, l
         return await ec.updateLayout(egressId, layout)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while updating layout!!!')
+        console.error('[Utils]: error while updating layout!!!')
         return false
     }
 }
@@ -169,7 +169,7 @@ export const updateStream = async (ec: livekit.EgressClient, egressId: string, p
         return await ec.updateStream(egressId, addOutputUrls, removeOutputUrls)
     } catch (e) {
         console.error(e)
-        console.log('[Utils]: error while updating stream!!!')
+        console.error('[Utils]: error while updating stream!!!')
         return false
     }
 }

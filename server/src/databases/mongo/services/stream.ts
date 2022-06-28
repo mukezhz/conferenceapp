@@ -18,7 +18,7 @@ export class StreamService {
       if (!streams.length) return null;
       return streams;
     } catch (e) {
-      console.log(e, "[Error]: find stream by room name!!!")
+      console.error(e, "[Error]: find stream by room name!!!")
       throw new exception.HttpException(409, "[GET]: Stream with provided identity doesn't exists!!!");
     }
   }
@@ -34,7 +34,7 @@ export class StreamService {
       })
       return createStreamData;
     } catch (e) {
-      console.log(e, "[CREATE]: error while creating stream!!!")
+      console.error(e, "[CREATE]: error while creating stream!!!")
       throw new exception.HttpException(409, `${streamData.email} already exists!!!`);
     }
   }
@@ -52,7 +52,7 @@ export class StreamService {
       if (!updateStreamByRoomName) return null
       return updateStreamByRoomName;
     } catch (e) {
-      console.log(e, "[UPDATE]: error in stream update end date!!!");
+      console.error(e, "[UPDATE]: error in stream update end date!!!");
       throw new exception.HttpException(409, "Updation is not successful!!!");
     }
   }
@@ -63,7 +63,7 @@ export class StreamService {
       if (!deleteStreamByIdentity) return null
       return deleteStreamByIdentity;
     } catch (e) {
-      console.log(e, "[DELETE]: error in delete stream!!!")
+      console.error(e, "[DELETE]: error in delete stream!!!")
       throw new exception.HttpException(409, "You're not user");
     }
   }

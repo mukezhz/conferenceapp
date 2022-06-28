@@ -51,7 +51,7 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
             }
             const date = Number(start_date)
             if (!date) return res.status(400).json({ message: 'invalid time stamp: provide number !!!' })
-            const result = await m.meeting.create({ ...req.body, start_date: new Date(date), id: uniqueToken, room: uniqueToken })
+            const result = await m.meeting.create({ ...req.body, start_date: date, id: uniqueToken, room: uniqueToken })
             return res.status(200).json({ message: "success", data: { id: result.id } })
         } catch (e: any) {
             return res.status(400).json({ message: "error while creating!!!", error: e.message })
@@ -132,7 +132,8 @@ export const handleUpdateWaiting = async (req: express.Request, res: express.Res
 }
 
 export const handleJoinMeeting = async (req: express.Request, res: express.Response) => {
-    const { identity = '', id = '', metadata = '', ttl = "10", username = "" } = req.body
+    const { identity = '', metadata = '', ttl = "10", username = "" } = req.body
+    const { meeting_id = "" } = req.params
     const { accesstoken } = req.headers as { [key: string]: string }
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
@@ -146,18 +147,18 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         }
     };
     try {
-        const search = await m.meeting.findById(id)
+        const search = await m.meeting.findById(meeting_id)
         if (!search?.room) return res.status(404).json({ message: 'meeting doesn\'t exists!!!' })
         const countryCode: string = search.country
         if (!accesstoken) {
             // user is not login
-            if (!id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
+            if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
             else if (!username) return res.status(400).json({ message: 'user name is not provided!!!' })
             else if (!identity) return res.status(400).json({ message: 'user identity is not provided!!!' })
             // if waiting=true return waiting token
             if (search?.waiting_room_enabled) {
                 const result = await m.waiting.create({
-                    meeting_id: id,
+                    meeting_id: meeting_id,
                     user_id: identity,
                     user_name: username
                 })
@@ -176,7 +177,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         const result = await axios.default(config)
         const userId = result.data?.user_profile?.user_id || identity
         const userName = result.data?.user_profile?.displayName || username
-        if (!id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
+        if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
         const { hosts = [], members = [] } = search?.participants as { hosts: [], members: [] }
 
         const searchHost = hosts.filter(d => d === userId)
@@ -196,7 +197,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         if (search?.waiting_room_enabled) {
             // TODO: fill the waiting table return status
             const result = await m.waiting.create({
-                meeting_id: id,
+                meeting_id: meeting_id,
                 user_id: userId,
                 user_name: userName
             })
@@ -212,4 +213,27 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         console.error(e)
         return res.status(401).json({ message: "unauthorized user!!!" })
     }
+}
+
+export const handleSearchMeeting = async (req: express.Request, res: express.Response) => {
+    const { st, et } = req.query
+    const { app_id } = req.params
+    if (!st) return res.status(400).json({ message: 'start time is not provided!!!' })
+    else if (!et) return res.status(400).json({ message: 'end time is not provided!!!' })
+    else if (!app_id) return res.status(400).json({ message: 'app id is not provided!!!' })
+    const startDateTimeNum = Number(st)
+    if (!startDateTimeNum) return res.status(400).json({ message: 'unable to obtain date from start time!!!' })
+    const endDateTimeNum = Number(et)
+    if (!endDateTimeNum) return res.status(400).json({ message: 'unable to obtain date from end time!!!' })
+    try {
+        const searchMeetings = await m?.meeting?.findByDate(startDateTimeNum, endDateTimeNum, app_id)
+        if (!searchMeetings.length) return res.status(400).json({ message: "meetings doesn't exist in the provided range or app id didn't match!!!" })
+        const result = util.toJson(searchMeetings)
+        return res.json({ message: "success", data: JSON.parse(result) })
+    } catch (e) {
+        console.error(e)
+        return res.status(500).json({ message: "something went wrong" })
+    }
+
+    return res.json({ message: "success" })
 }

@@ -1,5 +1,8 @@
 -- CreateEnum
-CREATE TYPE "StatusRole" AS ENUM ('NEW', 'PENDING', 'CANCEL');
+CREATE TYPE "StatusMeeting" AS ENUM ('NEW', 'CANCEL');
+
+-- CreateEnum
+CREATE TYPE "StatusWaiting" AS ENUM ('WAITING', 'APPROVED', 'REJECTED');
 
 -- CreateTable
 CREATE TABLE "meetings" (
@@ -8,15 +11,15 @@ CREATE TABLE "meetings" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "participants" JSONB NOT NULL DEFAULT '{}',
-    "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" "StatusRole" NOT NULL DEFAULT E'NEW',
-    "cover_image" TEXT NOT NULL,
+    "start_date" BIGINT NOT NULL DEFAULT 0,
+    "status" "StatusMeeting" NOT NULL DEFAULT E'NEW',
+    "cover_image" TEXT,
     "app_id" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "waiting_room_enabled" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "count" SERIAL NOT NULL,
+    "created_at" BIGINT NOT NULL DEFAULT 0,
+    "updated_at" BIGINT NOT NULL DEFAULT 0,
+    "count" BIGSERIAL NOT NULL,
 
     CONSTRAINT "meetings_pkey" PRIMARY KEY ("id")
 );
@@ -24,7 +27,7 @@ CREATE TABLE "meetings" (
 -- CreateTable
 CREATE TABLE "join_codes" (
     "meeting_id" TEXT NOT NULL,
-    "expirity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expire_time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "identity" TEXT NOT NULL,
     "join_code" TEXT NOT NULL,
 
@@ -36,17 +39,14 @@ CREATE TABLE "waiting_users" (
     "meeting_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "user_name" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "token" TEXT,
+    "status" "StatusWaiting" NOT NULL DEFAULT E'WAITING',
 
     CONSTRAINT "waiting_users_pkey" PRIMARY KEY ("meeting_id","user_id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "meetings_room_key" ON "meetings"("room");
-
--- CreateIndex
-CREATE UNIQUE INDEX "meetings_count_key" ON "meetings"("count");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "join_codes_join_code_key" ON "join_codes"("join_code");

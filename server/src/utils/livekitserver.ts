@@ -54,7 +54,7 @@ export async function updateRoomMetadata(svc: RoomServiceClient, room: string, m
         return svc.updateRoomMetadata(room, metadata)
     } catch (e) {
         console.error(e)
-        console.log('error while updating room metadata!!!')
+        console.error('error while updating room metadata!!!')
     }
 }
 
@@ -67,7 +67,7 @@ export async function getParticipant(svc: RoomServiceClient, room: string, ident
         return await svc.getParticipant(room, identity)
     } catch (e) {
         console.error(e)
-        console.log('error while fetching participant!!!')
+        console.error('error while fetching participant!!!')
     }
 }
 
@@ -77,7 +77,7 @@ export async function listParticipants(svc: RoomServiceClient, room: string): Pr
         return participants
     } catch (e) {
         console.error(e)
-        console.log('error while listing participants!!!')
+        console.error('error while listing participants!!!')
     }
 }
 
@@ -86,7 +86,7 @@ export async function mutePublishedTrack(svc: RoomServiceClient, room: string, i
         return await svc.mutePublishedTrack(room, identity, trackSid, muted)
     } catch (e) {
         console.error(e)
-        console.log('error while muting publish track!!!')
+        console.error('error while muting publish track!!!')
     }
 }
 
@@ -96,7 +96,7 @@ export async function removeParticipant(svc: RoomServiceClient, room: string, id
         return true
     } catch (e) {
         console.error(e)
-        console.log('error while removing participant!!!', identity)
+        console.error('error while removing participant!!!', identity)
         return false
     }
 }
@@ -106,7 +106,7 @@ export async function sendData(svc: RoomServiceClient, room: string, data: Uint8
         return await svc.sendData(room, data, kind)
     } catch (e) {
         console.error(e)
-        console.log('error while sending the data!!!')
+        console.error('error while sending the data!!!')
         return false
     }
 }
@@ -127,7 +127,7 @@ export async function updateParticipant(svc: RoomServiceClient, room: string, id
         return svc.updateParticipant(room, identity, metadata, permission)
     } catch (e) {
         console.error(e)
-        console.log('error while updating participant metadata or permissions')
+        console.error('error while updating participant metadata or permissions')
         return false
     }
 }

@@ -74,7 +74,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
                 }
             })
         } catch (e) {
-            console.log('error', e)
+            console.error('error', e)
         }
         // model.StreamModel.create({
 
@@ -82,7 +82,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
         return res.status(200).json({ message: 'success', egress: egressInfo })
     } catch (e) {
         console.error(e)
-        console.log('[Controller]: error while handling start live stream!!!')
+        console.error('[Controller]: error while handling start live stream!!!')
         return res.status(500).json({ message: 'error while starting stream!!!' })
     }
 }
@@ -98,7 +98,7 @@ export const handleStopLiveStream = async (req: express.Request, res: express.Re
         return res.status(200).json({ message: 'success', egress: result })
     } catch (e) {
         console.error(e)
-        console.log('[Controller]: error while handling stop live stream!!!')
+        console.error('[Controller]: error while handling stop live stream!!!')
         return res.status(500).json({ message: 'error while stopping stream!!!' })
     }
 }
@@ -118,7 +118,7 @@ export const handleUpdateStream = async (req: express.Request, res: express.Resp
         return res.status(200).json({ message: 'success' })
     } catch (e) {
         console.error(e)
-        console.log('[Controller]: error while handling update stream!!!')
+        console.error('[Controller]: error while handling update stream!!!')
         return res.status(500).json({ message: 'error while updating stream!!!' })
     }
 }
@@ -132,7 +132,7 @@ export const handleGetStreamInfo = async (req: express.Request, res: express.Res
         return res.status(200).json({ message: 'success', streams: streamInfos })
     } catch (e) {
         console.error(e)
-        console.log('[Controller]: error while handling update stream!!!')
+        console.error('[Controller]: error while handling update stream!!!')
         return res.status(500).json({ message: 'error while fetching stream info!!!' })
     }
 }

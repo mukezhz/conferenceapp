@@ -4,6 +4,7 @@ import * as j from "../databases";
 import * as util from "../utils"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
+const apiUrl = process.env.API_URL || 'https://test.com'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
 const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 const everestUrl = process.env.EVEREST_URL || 'https://example.com'
@@ -47,7 +48,7 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
         const meet = await j.meeting.findById(meeting_id)
         if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
         const data = await j.joinCode.create({ ...req.body, identity: requiredIdentity, expire_time: new Date(time) })
-        return res.status(200).json({ message: "success", data: { join_code: data.join_code } })
+        return res.status(200).json({ message: "success", data: { join_code: data.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${data.join_code}` } })
     } catch (e: any) {
         // console.error(e)
         console.error("inserting to database!!!")
@@ -107,8 +108,8 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
         const memberToken = util.obtainMemberToken(meet.room, requiredIdentity, apiKey, apiSecret, requiredName)
         return res.status(200).json({ message: "success", data: { token: memberToken, url: util.urls[countryCode] } })
     } catch (e: any) {
-        // console.error(e)
+        console.error(e)
         console.error("inserting to database!!!")
-        return res.status(500).json({ message: e.message })
+        return res.status(500).json({ message: "token expires!!!" })
     }
 }

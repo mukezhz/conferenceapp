@@ -11,20 +11,20 @@ datasource db {
 }
 
 model Meeting {
-  id                   String     @id @default(uuid())
-  room                 String     @unique
+  id                   String        @id @default(uuid())
+  room                 String        @unique
   title                String
   description          String?
-  participants         Json       @default("{}")
-  start_date           DateTime   @default(now())
+  participants         Json          @default("{}")
+  start_date           BigInt        @default(0)
   status               StatusMeeting @default(NEW)
   cover_image          String?
   app_id               String
   country              String
-  waiting_room_enabled Boolean    @default(true)
-  created_at           DateTime   @default(now())
-  updated_at           DateTime   @updatedAt
-  count                Int        @default(autoincrement())
+  waiting_room_enabled Boolean       @default(true)
+  created_at           BigInt        @default(0)
+  updated_at           BigInt        @default(0)
+  count                BigInt        @default(autoincrement())
 
   JoinCode JoinCode[]
   Waiting  Waiting[]
@@ -49,7 +49,7 @@ model JoinCode {
 
 model Waiting {
   meeting_id String
-  Meeting    Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
+  Meeting    Meeting?      @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
   user_id    String
   user_name  String
   token      String?

@@ -19,3 +19,8 @@ export async function asyncForEach(array: Array<any>, callback: Function) {
         await callback(array[index], index, array);
     }
 }
+
+export function toJson(data: object) {
+    return JSON.stringify(data, (_, v) => typeof v === 'bigint' ? `${v}n` : v)
+        .replace(/"(-?\d+)n"/g, (_, a) => a);
+}

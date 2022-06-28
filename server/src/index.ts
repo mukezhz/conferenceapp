@@ -3,9 +3,12 @@ import { Express } from 'express'
 import * as cookieParser from 'cookie-parser'
 import * as cors from 'cors'
 import * as router from "./routes"
+import * as mw from "./middlewares"
+
 
 const app: Express = express();
 app.use(express.json());
+app.use(mw.postTrimmer);
 app.use(cookieParser());
 app.use(cors({
     origin: "*",

@@ -4,14 +4,13 @@ const { meeting } = prisma.default
 export const create = async (data: any) => {
     try {
         return await meeting.create({
-            data: data
+            data: { ...data, created_at: Date.now(), updated_at: Date.now() }
         })
     } catch (e: any) {
         console.error(e, "[service]: error while creating!!!")
         throw new Error("something went wrong!!!")
     }
 }
-
 
 export const remove = async (uuid: string) => {
     try {
@@ -32,7 +31,7 @@ export const update = async (data: any) => {
             where: {
                 id: data.uuid,
             },
-            data: data,
+            data: { ...data, updated_at: Date.now() },
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating!!!")
@@ -47,7 +46,8 @@ export const updateStatus = async (uuid: string, status: any) => {
                 id: uuid,
             },
             data: {
-                status: status
+                status: status,
+                updated_at: Date.now()
             },
         })
     } catch (e: any) {
@@ -63,7 +63,8 @@ export const updateWaitingRoom = async (uuid: string, value: boolean) => {
                 id: uuid,
             },
             data: {
-                waiting_room_enabled: value
+                waiting_room_enabled: value,
+                updated_at: Date.now()
             },
         })
     } catch (e: any) {
@@ -79,7 +80,8 @@ export const updateParticipant = async (uuid: string, participants: any) => {
                 id: uuid,
             },
             data: {
-                participants: participants
+                participants: participants,
+                updated_at: Date.now()
             },
         })
     } catch (e: any) {
@@ -168,7 +170,34 @@ export const findByRoom = async (room: string) => {
     try {
         return await meeting.findUnique({
             where: {
-                room: room
+                room: room,
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while finding by room!!!")
+        throw new Error('something went wrong!!!')
+    }
+}
+
+export const findByDate = async (startDate: number, endDate: number, appId: string) => {
+    try {
+        return await meeting.findMany({
+            where: {
+                app_id: appId,
+                start_date: {
+                    gt: startDate,
+                    lt: endDate
+                }
+            },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                participants: true,
+                status: true,
+                cover_image: true,
+                created_at: true,
+                updated_at: true,
             }
         })
     } catch (e: any) {
