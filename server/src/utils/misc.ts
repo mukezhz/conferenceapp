@@ -14,9 +14,9 @@ export function checkNameRoom(room = "", name = "") {
     return { status, message }
 }
 
-export async function asyncForEach(array: Array<any>, callback: Function) {
-    for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
+export async function asyncForEach(arr: Array<any>, callback: Function) {
+    for (let i = 0; i < arr.length; i++) {
+        await callback(arr[i], i, arr);
     }
 }
 

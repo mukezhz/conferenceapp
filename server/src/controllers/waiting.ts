@@ -91,7 +91,6 @@ export const handleUpdateWaitingStatus = async (req: express.Request, res: expre
             const meeting = await w.meeting.findById(meeting_id)
             if (!meeting) return res.status(404).json({ message: 'meeting doesn\'t exist by provided meeting id!!!' })
             const search = await w.waiting.find(meeting_id, requiredId)
-            console.log('search', search)
             if (!search) return res.status(400).json({ message: "unable to find in waiting!!!" })
             // const result = await w.waiting.updateStatus(meeting_id, requiredId, upperStatus)
             let data = {}

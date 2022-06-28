@@ -5,7 +5,6 @@ export function postTrimmer(req: express.Request, res: express.Response, next: e
         for (const [key, value] of Object.entries(req.body)) {
             if (key && typeof (value) === 'string')
                 req.body[key] = value.trim();
-            console.log(key, value)
         }
     }
     next();

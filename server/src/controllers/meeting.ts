@@ -1,9 +1,11 @@
 import * as axios from "axios";
 import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
+import * as nanoid from "nanoid";
 import * as m from "../databases";
 import * as util from "../utils"
-import * as nanoid from "nanoid";
+import * as livekit from "../utils/livekitserver"
+import * as url from "../utils/urls"
 
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
@@ -51,7 +53,7 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
             }
             const date = Number(start_date)
             if (!date) return res.status(400).json({ message: 'invalid time stamp: provide number !!!' })
-            const result = await m.meeting.create({ ...req.body, start_date: date, id: uniqueToken, room: uniqueToken })
+            const result = await m.meeting.create({ ...req.body, start_date: date, id: uniqueToken, room: room })
             return res.status(200).json({ message: "success", data: { id: result.id } })
         } catch (e: any) {
             return res.status(400).json({ message: "error while creating!!!", error: e.message })
@@ -227,9 +229,18 @@ export const handleSearchMeeting = async (req: express.Request, res: express.Res
     if (!endDateTimeNum) return res.status(400).json({ message: 'unable to obtain date from end time!!!' })
     try {
         const searchMeetings = await m?.meeting?.findByDate(startDateTimeNum, endDateTimeNum, app_id)
-        if (!searchMeetings.length) return res.status(400).json({ message: "meetings doesn't exist in the provided range or app id didn't match!!!" })
-        const result = util.toJson(searchMeetings)
-        return res.json({ message: "success", data: JSON.parse(result) })
+        const results = JSON.parse(util.toJson(searchMeetings))
+        function asyncMap(arrs: any) {
+            return Promise.all(arrs.map(async (data: any) => {
+                const svc = livekit.roomService(url.urls[data.country], apiKey, apiSecret)
+                if (!svc) return { ...data, active_participants: [] }
+                const active_participants = await livekit.listParticipants(svc, data.room)
+                if (!active_participants) return { ...data, active_participants: [] }
+                return { ...data, active_participants: active_participants }
+            }))
+        }
+        const resultWithParticipants = await asyncMap(results)
+        return res.json({ message: "success", data: resultWithParticipants })
     } catch (e) {
         console.error(e)
         return res.status(500).json({ message: "something went wrong" })

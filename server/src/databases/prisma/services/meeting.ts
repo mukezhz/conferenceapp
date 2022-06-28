@@ -198,6 +198,8 @@ export const findByDate = async (startDate: number, endDate: number, appId: stri
                 cover_image: true,
                 created_at: true,
                 updated_at: true,
+                country: true,
+                room: true
             }
         })
     } catch (e: any) {
