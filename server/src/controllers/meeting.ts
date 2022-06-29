@@ -158,6 +158,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
             else if (!username) return res.status(400).json({ message: 'user name is not provided!!!' })
             else if (!identity) return res.status(400).json({ message: 'user identity is not provided!!!' })
             // if waiting=true return waiting token
+            if (await m.waiting.find(meeting_id, identity)) return res.status(400).json({ message: "waiting is already created!!!" })
             if (search?.waiting_room_enabled) {
                 const result = await m.waiting.create({
                     meeting_id: meeting_id,
@@ -198,6 +199,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         })
         if (search?.waiting_room_enabled) {
             // TODO: fill the waiting table return status
+            if (!await m.waiting.find(meeting_id, userId)) return res.status(400).json({ message: "waiting is already created!!!" })
             const result = await m.waiting.create({
                 meeting_id: meeting_id,
                 user_id: userId,
@@ -213,7 +215,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         })
     } catch (e) {
         console.error(e)
-        return res.status(401).json({ message: "unauthorized user!!!" })
+        return res.status(401).json({ message: "something went wrong!!!" })
     }
 }
 
