@@ -53,7 +53,7 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
             }
             const date = Number(start_date)
             if (!date) return res.status(400).json({ message: 'invalid time stamp: provide number !!!' })
-            const result = await m.meeting.create({ ...req.body, start_date: date, id: uniqueToken, room: room })
+            const result = await m.meeting.create({ ...req.body, start_date: date, id: uniqueToken, room: room || uniqueToken })
             return res.status(200).json({ message: "success", data: { id: result.id } })
         } catch (e: any) {
             return res.status(400).json({ message: "error while creating!!!", error: e.message })
