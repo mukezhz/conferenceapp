@@ -9,7 +9,7 @@ export const create = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while creating!!!")
-        throw new Error("something went wrong!!!")
+        throw new Error("error while creating!!!")
     }
 }
 
@@ -25,7 +25,7 @@ export const remove = async (identity: string, meetingId: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while removing!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while removing!!!')
     }
 }
 
@@ -42,7 +42,7 @@ export const update = async (identity: string, meetingId: string, data: any) => 
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating!!!')
     }
 }
 
@@ -58,7 +58,7 @@ export const findAll = async (cursor: any, limit: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding all!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding all!!!')
     }
 }
 
@@ -69,7 +69,7 @@ export const findOne = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while findOne!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while findOne!!!')
     }
 }
 
@@ -82,7 +82,7 @@ export const findByJoinCode = async (code: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding join code!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding join code!!!')
     }
 }
 
@@ -97,7 +97,7 @@ export const findByMeetingJoinCode = async (meetingId: string, identity: string,
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding meeting join code!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding meeting join code!!!')
     }
 }
 
@@ -113,7 +113,7 @@ export const findByMeetingId = async (meetingId: string, identity: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding meeting id!!!")
-        throw new Error(e.message)
+        throw new Error('error while finding meeting id!!!')
     }
 }
 

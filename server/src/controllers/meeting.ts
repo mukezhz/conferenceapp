@@ -34,7 +34,7 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
             title,
             description,
             participants,
-            start_date = '',
+            start_date = Date.now().toString(),
             status,
             cover_image = "",
             app_id,
@@ -61,7 +61,7 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
     } catch (e) {
         console.error(e)
         console.error("inserting to database!!!")
-        return res.status(500).json({ message: 'server error' })
+        return res.status(500).json({ message: 'server error!!!' })
     }
 }
 

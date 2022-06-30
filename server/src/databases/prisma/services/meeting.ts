@@ -8,7 +8,7 @@ export const create = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while creating!!!")
-        throw new Error("something went wrong!!!")
+        throw new Error("error while creating!!!")
     }
 }
 
@@ -21,7 +21,7 @@ export const remove = async (uuid: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while removing!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while removing!!!')
     }
 }
 
@@ -35,7 +35,7 @@ export const update = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating!!!')
     }
 }
 
@@ -52,7 +52,7 @@ export const updateStatus = async (uuid: string, status: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating status!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating status!!!')
     }
 }
 
@@ -69,7 +69,7 @@ export const updateWaitingRoom = async (uuid: string, value: boolean) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating waiting room!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating waiting room!!!')
     }
 }
 
@@ -86,7 +86,7 @@ export const updateParticipant = async (uuid: string, participants: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating participant!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating participant!!!')
     }
 }
 
@@ -110,7 +110,7 @@ export const addParticipant = async (uuid: string, participants: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while adding participant!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while adding participant!!!')
     }
 }
 
@@ -126,7 +126,7 @@ export const findAll = async (cursor: any, limit: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding all!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding all!!!')
     }
 }
 
@@ -137,7 +137,7 @@ export const findOne = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding one!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding one!!!')
     }
 }
 
@@ -150,7 +150,7 @@ export const findById = async (id: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding by id!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding by id!!!')
     }
 }
 
@@ -175,7 +175,7 @@ export const findByRoom = async (room: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding by room!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding by room!!!')
     }
 }
 
@@ -204,6 +204,6 @@ export const findByDate = async (startDate: number, endDate: number, appId: stri
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding by room!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding by room!!!')
     }
 }

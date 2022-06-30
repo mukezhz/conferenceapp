@@ -8,7 +8,7 @@ export const create = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while creating!!!")
-        throw new Error("something went wrong!!!")
+        throw new Error("error while creating!!!")
     }
 }
 
@@ -24,7 +24,7 @@ export const remove = async (meetingId: string, userId: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while removing!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while removing!!!')
     }
 }
 
@@ -41,7 +41,7 @@ export const update = async (meetingId: string, userId: string, data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating!!!')
     }
 }
 
@@ -60,7 +60,7 @@ export const updateStatus = async (meetingId: string, userId: string, status: an
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating status!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating status!!!')
     }
 }
 
@@ -79,7 +79,7 @@ export const updateToken = async (meetingId: string, userId: string, token: stri
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating token!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating token!!!')
     }
 }
 
@@ -99,7 +99,7 @@ export const updateStatusToken = async (meetingId: string, userId: string, statu
         })
     } catch (e: any) {
         console.error(e, "[service]: error while updating token!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while updating token!!!')
     }
 }
 
@@ -114,7 +114,7 @@ export const findAll = async (cursor: any, limit: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding all!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding all!!!')
     }
 }
 
@@ -130,7 +130,7 @@ export const find = async (meetingId: string, userId: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while findOne!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while findOne!!!')
     }
 }
 
@@ -144,7 +144,7 @@ export const findByStatus = async (meetingId: string, status: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while findOne!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while findOne!!!')
     }
 }
 
@@ -155,7 +155,7 @@ export const findOne = async (data: any) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while findOne!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while findOne!!!')
     }
 }
 
@@ -168,7 +168,7 @@ export const findByUserId = async (user_id: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding join code!!!")
-        throw new Error('something went wrong!!!')
+        throw new Error('error while finding join code!!!')
     }
 }
 
@@ -181,7 +181,7 @@ export const findByMeetingId = async (meetingId: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding meeting id!!!")
-        throw new Error(e.message)
+        throw new Error('error while finding meeting id!!!')
     }
 }
 
