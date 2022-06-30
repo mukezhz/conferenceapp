@@ -8,7 +8,13 @@ const receiver = new WebhookReceiver(apiKey, apiSecret);
 
 export const handleWebEvent = async (req: express.Request, res: express.Response) => {
     // event is a WebhookEvent object
-    const event = receiver.receive(req.body, req.get('Authorization'))
-    console.log("handle web event", event)
-    return res.json({ message: "success", data: event })
+    try {
+        console.log(JSON.stringify(req.body))
+        console.log(req.get('Authorization'))
+        const event = receiver.receive(req.body, req.get('Authorization'))
+        console.log("handle web event", event)
+    } catch (e) {
+        console.log(e)
+        console.log("[error]: something went very wrong")
+    }
 }

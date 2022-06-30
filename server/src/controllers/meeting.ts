@@ -25,6 +25,7 @@ interface Meeting {
     app_id: string,
     country: string,
     waiting_room_enabled: boolean
+    token: string
 }
 
 export const handleStartMeeting = async (req: express.Request, res: express.Response) => {
@@ -39,7 +40,8 @@ export const handleStartMeeting = async (req: express.Request, res: express.Resp
             cover_image = "",
             app_id,
             country,
-            waiting_room_enabled
+            waiting_room_enabled,
+            token
         }: Meeting = req.body
         const uniqueToken = nanoid.nanoid()
         if (!title) return res.status(400).json({ message: 'title is not provided!!!' })
@@ -158,7 +160,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
             else if (!username) return res.status(400).json({ message: 'user name is not provided!!!' })
             else if (!identity) return res.status(400).json({ message: 'user identity is not provided!!!' })
             // if waiting=true return waiting token
-            if (await m.waiting.find(meeting_id, identity)) return res.status(400).json({ message: "waiting is already created!!!" })
+            if (await m.waiting.find(meeting_id, identity)) return res.status(400).json({ message: "meeting is already created!!!" })
             if (search?.waiting_room_enabled) {
                 const result = await m.waiting.create({
                     meeting_id: meeting_id,
@@ -199,7 +201,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         })
         if (search?.waiting_room_enabled) {
             // TODO: fill the waiting table return status
-            if (!await m.waiting.find(meeting_id, userId)) return res.status(400).json({ message: "waiting is already created!!!" })
+            if (!await m.waiting.find(meeting_id, userId)) return res.status(400).json({ message: "meeting is already created!!!" })
             const result = await m.waiting.create({
                 meeting_id: meeting_id,
                 user_id: userId,

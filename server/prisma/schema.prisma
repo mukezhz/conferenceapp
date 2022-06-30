@@ -24,7 +24,7 @@ model Meeting {
   waiting_room_enabled Boolean       @default(true)
   created_at           BigInt        @default(0)
   updated_at           BigInt        @default(0)
-  count                BigInt        @default(autoincrement())
+  token                String?       @default("")
 
   JoinCode JoinCode[]
   Waiting  Waiting[]

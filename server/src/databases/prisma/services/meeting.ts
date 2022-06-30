@@ -179,6 +179,22 @@ export const findByRoom = async (room: string) => {
     }
 }
 
+export const getTokenById = async (meeting_id: string) => {
+    try {
+        return await meeting.findUnique({
+            where: {
+                id: meeting_id,
+            },
+            select: {
+                token: true
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while fetching token from meeting id!!!")
+        throw new Error('error while fetching token from meeting id!!!')
+    }
+}
+
 export const findByDate = async (startDate: number, endDate: number, appId: string) => {
     try {
         return await meeting.findMany({

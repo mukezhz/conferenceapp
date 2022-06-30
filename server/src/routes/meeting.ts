@@ -1,5 +1,6 @@
 import * as express from "express"
 import * as m from "../controllers"
+import * as mw from "../middlewares"
 
 export const router = express.Router()
 
@@ -21,6 +22,7 @@ router.patch('/status', m.handleUpdateStatus)
 // update waiting room enabled
 router.patch('/waiting', m.handleUpdateWaiting)
 
+router.use('/join/:meeting_id', mw.tokenValidator)
 // update waiting room enabled
 router.post('/join/:meeting_id', m.handleJoinMeeting)
 
