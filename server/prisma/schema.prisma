@@ -25,15 +25,18 @@ model Meeting {
   created_at           BigInt        @default(0)
   updated_at           BigInt        @default(0)
   token                String?       @default("")
+  webhook_url          String?
 
   JoinCode JoinCode[]
   Waiting  Waiting[]
+
   @@map(name: "meetings")
 }
 
 enum StatusMeeting {
   NEW
   CANCEL
+  ENDED
 }
 
 model JoinCode {
@@ -63,4 +66,40 @@ enum StatusWaiting {
   WAITING
   APPROVED
   REJECTED
+}
+
+model Streaming {
+  id         String   @id @default(uuid())
+  room_id    String
+  egress_id  String
+  room_name  String
+  hostname   String
+  email      String?
+  identity   String
+  room       Room     @relation(fields: [roomName], references: [name])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  roomName String
+  @@map(name: "streamings")
+}
+
+model Room {
+  name       String @unique
+  start_time String
+  end_time   String
+  egress     Egress @relation(fields: [egressId], references: [egressId])
+
+  Streaming Streaming[]
+  egressId  String
+  @@map(name: "rooms")
+}
+
+model Egress {
+  egressId  String @unique
+  roomId    String
+  status    String
+  startedAt Int
+  endedAt   Int
+  room      Room[]
 }

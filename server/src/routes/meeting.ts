@@ -34,3 +34,6 @@ router.post('/:meeting_id/:join_code', m.handleFindMeetingIdJoinCode)
 
 // search meetings
 router.get('/search/:app_id', m.handleSearchMeeting)
+
+// search active participants from meetings
+router.get('/:meeting_id/participants/active', m.handleSearchActiveMember)

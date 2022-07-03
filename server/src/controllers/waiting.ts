@@ -17,7 +17,7 @@ export const handleInitiateWaiting = async (req: express.Request, res: express.R
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
     const config = {
-        token: 'get',
+        method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
             'Authorization': `Bearer ${accesstoken}`,
@@ -64,7 +64,7 @@ export const handleUpdateWaitingStatus = async (req: express.Request, res: expre
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
     const config = {
-        token: 'get',
+        method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
             'Authorization': `Bearer ${accesstoken}`,

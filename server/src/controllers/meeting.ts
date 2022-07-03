@@ -142,7 +142,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
     const config = {
-        token: 'get',
+        method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
             'Authorization': `Bearer ${accesstoken}`,
@@ -151,40 +151,22 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         }
     };
     try {
+        if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
+        let userName = username
+        let userId = identity
+        if (accesstoken) {
+            const result = await axios.default(config)
+            userId = result.data?.user_profile?.user_id || identity
+            userName = result.data?.user_profile?.displayName || username
+        }
+        else if (!userName) return res.status(400).json({ message: 'user name is not provided!!!' })
+        else if (!userId) return res.status(400).json({ message: 'user identity is not provided!!!' })
+
         const search = await m.meeting.findById(meeting_id)
+        if (search?.status === "ENDED") return res.status(400).json({message: "meeting has been ended!!!"})
         if (!search?.room) return res.status(404).json({ message: 'meeting doesn\'t exists!!!' })
         const countryCode: string = search.country
-        if (!accesstoken) {
-            // user is not login
-            if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
-            else if (!username) return res.status(400).json({ message: 'user name is not provided!!!' })
-            else if (!identity) return res.status(400).json({ message: 'user identity is not provided!!!' })
-            // if waiting=true return waiting token
-            if (await m.waiting.find(meeting_id, identity)) return res.status(400).json({ message: "meeting is already created!!!" })
-            if (search?.waiting_room_enabled) {
-                const result = await m.waiting.create({
-                    meeting_id: meeting_id,
-                    user_id: identity,
-                    user_name: username
-                })
-                return res.status(200).json({
-                    message: 'success',
-                    status: result.status
-                })
-            }
-            // if waiting=false return member token
-            return res.status(200).json({
-                message: 'success',
-                access_token: util.obtainMemberToken(search.room, identity, apiKey, apiSecret, username) || 'error',
-                url: util.urls[countryCode]
-            })
-        }
-        const result = await axios.default(config)
-        const userId = result.data?.user_profile?.user_id || identity
-        const userName = result.data?.user_profile?.displayName || username
-        if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
         const { hosts = [], members = [] } = search?.participants as { hosts: [], members: [] }
-
         const searchHost = hosts.filter(d => d === userId)
         if (searchHost.length) return res.status(200).json(
             {
@@ -201,7 +183,11 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         })
         if (search?.waiting_room_enabled) {
             // TODO: fill the waiting table return status
-            if (!await m.waiting.find(meeting_id, userId)) return res.status(400).json({ message: "meeting is already created!!!" })
+            const searchWaiting = await m.waiting.find(meeting_id, userId)
+            if (searchWaiting) return res.status(400).json({
+                message: "waiting is already created!!!",
+                status: searchWaiting.status
+            })
             const result = await m.waiting.create({
                 meeting_id: meeting_id,
                 user_id: userId,
@@ -209,12 +195,13 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
             })
             return res.status(200).json({ message: 'success', status: result.status })
         }
-        // if waiting=false return member token
+        // if waiting=true return waiting token
         return res.status(200).json({
             message: 'success',
-            access_token: util.obtainMemberToken(search.room, userId, apiKey, apiSecret, userName) || 'error',
+            access_token: util.obtainMemberToken(search.room, identity, apiKey, apiSecret, username) || 'error',
             url: util.urls[countryCode]
         })
+
     } catch (e) {
         console.error(e)
         return res.status(401).json({ message: "something went wrong!!!" })
@@ -240,7 +227,7 @@ export const handleSearchMeeting = async (req: express.Request, res: express.Res
                 if (!svc) return { ...data, active_participants: [] }
                 const active_participants = await livekit.listParticipants(svc, data.room)
                 if (!active_participants) return { ...data, active_participants: [] }
-                return { ...data, active_participants: active_participants }
+                return { ...data, active_participants: active_participants, room: data.room }
             }))
         }
         const resultWithParticipants = await asyncMap(results)
@@ -249,6 +236,24 @@ export const handleSearchMeeting = async (req: express.Request, res: express.Res
         console.error(e)
         return res.status(500).json({ message: "something went wrong" })
     }
+}
 
-    return res.json({ message: "success" })
+export const handleSearchActiveMember = async (req: express.Request, res: express.Response) => {
+    const { meeting_id } = req.params
+    if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
+    try {
+        const searchMeeting = await m?.meeting.findById(meeting_id)
+        if (!searchMeeting) return res.status(404).json({ message: "meeting doesn't exists!!!" })
+        const svc = livekit.roomService(url.urls[searchMeeting.country], apiKey, apiSecret)
+        if (!svc) return res.status(500).json({ message: "error while initiating service client!!!" })
+        const active_participants = await livekit.listParticipants(svc, searchMeeting.room)
+        const rooms = await livekit.listRooms(svc, [searchMeeting?.room])
+        if (!rooms || !rooms.length) return res.status(400).json({ message: "room has not been created!!!" })
+        const identities = active_participants?.map(participant => participant.identity)
+        if (!active_participants || !active_participants.length) return res.json({ message: "success", participants: [] })
+        return res.json({ message: "success", participants: identities, room_created_at: rooms[0].creationTime })
+    } catch (e) {
+        console.error(e)
+        return res.status(500).json({ message: "something went wrong" })
+    }
 }

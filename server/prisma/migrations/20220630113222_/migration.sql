@@ -19,7 +19,7 @@ CREATE TABLE "meetings" (
     "waiting_room_enabled" BOOLEAN NOT NULL DEFAULT true,
     "created_at" BIGINT NOT NULL DEFAULT 0,
     "updated_at" BIGINT NOT NULL DEFAULT 0,
-    "count" BIGSERIAL NOT NULL,
+    "token" TEXT DEFAULT E'',
 
     CONSTRAINT "meetings_pkey" PRIMARY KEY ("id")
 );

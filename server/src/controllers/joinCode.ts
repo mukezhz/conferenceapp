@@ -21,7 +21,7 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
     const config = {
-        token: 'get',
+        method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
             'Authorization': `Bearer ${accesstoken}`,
@@ -75,7 +75,7 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
     const grpcAppId = req.headers['grpc-metadata-app-id'] as string
     const grpcWebKey = req.headers['grpc-metadata-web-api-key'] as string
     const config = {
-        token: 'get',
+        method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
             'Authorization': `Bearer ${accesstoken}`,

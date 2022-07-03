@@ -8,8 +8,6 @@ import * as c from "./controllers"
 
 
 const app: Express = express();
-app.use('/webhooks/events', express.raw())
-// app.post("/webhooks/events", c.handleWebEvent)
 app.use(express.json());
 app.use(mw.postTrimmer);
 app.use(cookieParser());
@@ -26,8 +24,6 @@ const port = process.env.PORT || 80;
 app.get("/", (req: express.Request, res: express.Response) => {
     return res.status(200).json({ message: 'Hello World!!!' })
 })
-
-// app.use('/api/meeetings/join/:meeting_id', mw.tokenValidator)
 
 app.use("/api", router.router)
 

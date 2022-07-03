@@ -21,7 +21,7 @@ COPY --from=builder ${HOME_APP}/package.json .
 COPY --from=builder ${HOME_APP}/package-lock.json .
 COPY --from=builder ${HOME_APP}/prisma prisma
 COPY --from=builder ${HOME_APP}/entrypoint.sh .
-RUN npm i
+RUN npm i --only=prod
 RUN sed -i 's/\r$//g' entrypoint.sh
 RUN chmod +x entrypoint.sh
 
