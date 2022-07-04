@@ -42,13 +42,13 @@ export const handleWebEvent = async (req: express.Request, res: express.Response
         };
         if (event === 'participant_joined') {
             // TODO: send post req to url
-            config.data.action = 'JOIN'
+            config.data.action = 'JOINED'
             const result = await axios.default(config)
             if (!result) console.log('[error]: error while sending JOIN to parewa!!!')
         }
         else if (event === 'participant_left') {
             // TODO: send post req to url
-            config.data.action = "LEAVE"
+            config.data.action = "LEFT"
             const result = await axios.default(config)
             if (!result) console.log('[error]: error while sending LEAVE to parewa!!!')
         }

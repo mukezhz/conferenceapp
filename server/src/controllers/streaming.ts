@@ -1,6 +1,6 @@
 import * as livekit from 'livekit-server-sdk';
 import * as express from "express"
-import * as r from "../utils"
+import * as util from "../utils"
 import * as egress from "livekit-server-sdk/dist/proto/livekit_egress"
 import * as service from "../databases/mongo/services"
 
@@ -36,7 +36,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
             audioOnly: any,
             customBaseUrl: string
         } = req.body
-        const ec = <livekit.EgressClient>r.getEgressClient(livekitHost, apiKey, apiSecret)
+        const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
         let newOptions: egress.EncodingOptions = {
             /** (default 1920) */
             width: 1280,
@@ -57,7 +57,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
             /** (default 4500) */
             videoBitrate: 4500
         }
-        const egressInfo: egress.EgressInfo | undefined = await r.startStreamEgress(ec, platform, streamKey, roomName, layout, 1, audioOnly, videoOnly, customBaseUrl)
+        const egressInfo: egress.EgressInfo | undefined = await util.startStreamEgress(ec, platform, streamKey, roomName, layout, newOptions, audioOnly, videoOnly, customBaseUrl)
         if (!egressInfo) return res.status(500).json({ message: 'unable to start streaming!!!' })
         const stream = new service.StreamService()
         try {
@@ -89,9 +89,9 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
 
 export const handleStopLiveStream = async (req: express.Request, res: express.Response) => {
     try {
-        const ec = <livekit.EgressClient>r.getEgressClient(livekitHost, apiKey, apiSecret)
+        const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
         const { egressId = '' }: { egressId: string } = req.body
-        const egressInfo = await r.stopEgress(ec, egressId)
+        const egressInfo = await util.stopEgress(ec, egressId)
         if (!egressInfo) return res.status(500).json({ message: 'unable to stop streaming!!!' })
         const stream = new service.StreamService()
         const result = await stream.updateStreamEndDate(egressId, new Date().toISOString())
@@ -112,8 +112,8 @@ export const handleUpdateStream = async (req: express.Request, res: express.Resp
             addOutputUrls = undefined,
             removeOutputUrls = undefined
         } = req.body
-        const ec = <livekit.EgressClient>r.getEgressClient(livekitHost, apiKey, apiSecret)
-        const egressInfo = await r.updateStream(ec, egressId, platform, streamKey, addOutputUrls, removeOutputUrls)
+        const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
+        const egressInfo = await util.updateStream(ec, egressId, platform, streamKey, addOutputUrls, removeOutputUrls)
         if (!egressInfo) return res.status(500).json({ message: 'unable to update streaming!!!' })
         return res.status(200).json({ message: 'success' })
     } catch (e) {

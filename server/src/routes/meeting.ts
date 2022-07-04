@@ -23,6 +23,7 @@ router.patch('/status', m.handleUpdateStatus)
 router.patch('/waiting', m.handleUpdateWaiting)
 
 router.use('/join/:meeting_id', mw.tokenValidator)
+
 // update waiting room enabled
 router.post('/join/:meeting_id', m.handleJoinMeeting)
 
@@ -37,3 +38,6 @@ router.get('/search/:app_id', m.handleSearchMeeting)
 
 // search active participants from meetings
 router.get('/:meeting_id/participants/active', m.handleSearchActiveMember)
+
+// add participats
+router.get('/:meeting_id/add/participants', m.handleAddParticipant)

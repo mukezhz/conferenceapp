@@ -117,6 +117,19 @@ export const findByMeetingId = async (meetingId: string, identity: string) => {
     }
 }
 
+export const findById = async (meetingId: string) => {
+    try {
+        return await joinCode.findFirst({
+            where: {
+                meeting_id: meetingId,
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while finding meeting id!!!")
+        throw new Error('error while finding meeting id!!!')
+    }
+}
+
 export const findMeetingIdJoinCode = async (meetingId: string, code: string) => {
     try {
         return await joinCode.findFirst({

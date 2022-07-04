@@ -1,6 +1,6 @@
 import * as axios from "axios";
 import * as express from "express"
-import * as j from "../databases";
+import * as db from "../databases";
 import * as util from "../utils"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
@@ -35,19 +35,18 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
     if (!time) return res.status(400).json({ message: 'expire time is not time stamp number!!!' })
     let requiredIdentity = ''
     try {
-        const search = await j.joinCode.findByMeetingId(meeting_id, identity)
-        if (search) return res.status(200).json({ message: 'data already exists!!!' })
         if (accesstoken) {
             const result = await axios.default(config)
-            const userName = result.data?.user_profile?.displayName || null
             const user_id = result.data?.user_profile?.user_id || null
-            requiredIdentity = user_id
+            requiredIdentity = user_id || identity
         }
-        requiredIdentity = requiredIdentity || identity
         if (!requiredIdentity) return res.status(400).json({ message: 'user\'s identity is not provided!!!' })
-        const meet = await j.meeting.findById(meeting_id)
+        const meet = await db.meeting.findById(meeting_id)
         if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
-        const data = await j.joinCode.create({ ...req.body, identity: requiredIdentity, expire_time: new Date(time) })
+        const search = await db.joinCode.findById(meeting_id)
+        if (!search) return res.status(200).json({ message: 'unable to create join code!!!' })
+        if (Date.now() - Number(search.expire_time) > 0) return res.status(400).json({ message: "code has been expired!!!" })
+        const data = await db.joinCode.create({ ...req.body, identity: requiredIdentity, expire_time: new Date(time) })
         return res.status(200).json({ message: "success", data: { join_code: data.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${data.join_code}` } })
     } catch (e: any) {
         // console.error(e)
@@ -60,7 +59,7 @@ export const handleFindByJoinCode = async (req: express.Request, res: express.Re
     try {
         const { join_code } = req.params
         if (!join_code) return res.status(400).json({ message: "id has not been provided!!!" })
-        const result = await j.joinCode.findByJoinCode(join_code)
+        const result = await db.joinCode.findByJoinCode(join_code)
         if (!result) return res.status(200).json({ message: "unable to find data from provided join_code!!!" })
         return res.json({ message: "success", data: result })
     } catch (e) {
@@ -92,16 +91,14 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
             const result = await axios.default(config)
             const userName = result.data?.user_profile?.displayName || null
             const user_id = result.data?.user_profile?.user_id || null
-            requiredIdentity = user_id
-            requiredName = userName
+            requiredIdentity = user_id || identity
+            requiredName = userName || name
         }
-        requiredIdentity = requiredIdentity || identity
-        requiredName = requiredName || name
         if (!requiredIdentity) return res.status(400).json({ message: 'user\'s identity is not provided!!!' })
         else if (!requiredName) return res.status(400).json({ message: 'user\'s name is not provided!!!' })
-        const search = await j.joinCode.findByMeetingJoinCode(meeting_id, requiredIdentity, join_code)
+        const search = await db.joinCode.findByMeetingJoinCode(meeting_id, requiredIdentity, join_code)
         if (!search) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id and room name!!!' })
-        const meet = await j.meeting.findById(meeting_id)
+        const meet = await db.meeting.findById(meeting_id)
         if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
         const countryCode = meet.country
         if ((new Date().getTime() - search.expire_time.getTime()) > 0) return res.status(200).json({ message: 'date have been expired!!!' })

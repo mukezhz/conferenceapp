@@ -13,7 +13,7 @@ export function roomService(livekitHost: string, apiKey: string, apiSecret: stri
 /* **************************************
 ***********    ROOM     *****************
 *****************************************/
-export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 5, participantno = 10): Promise<Room | boolean> {
+export async function createRoom(svc: RoomServiceClient, roomName: string, timeout = 172800, participantno = 10): Promise<Room | boolean> {
     const opts = {
         name: roomName,
         emptyTimeout: timeout,

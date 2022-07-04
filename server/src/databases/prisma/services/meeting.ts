@@ -90,19 +90,19 @@ export const updateParticipant = async (uuid: string, participants: any) => {
     }
 }
 
-export const addParticipant = async (uuid: string, participants: any) => {
+export const addParticipant = async (id: string, participants: any) => {
     try {
         const uniqueParticipants = meeting.findUnique({
             select: {
                 participants
             },
             where: {
-                id: uuid
+                id: id
             }
         })
         return await meeting.update({
             where: {
-                id: uuid,
+                id: id,
             },
             data: {
                 participants: { ...uniqueParticipants, ...participants }

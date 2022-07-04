@@ -1,6 +1,5 @@
 import * as express from "express"
-import * as uuid from "uuid"
-import * as t from "../utils"
+import * as util from "../utils"
 
 const apiKey = process.env.LIVEKIT_API_KEY || "error"
 const apiSecret = process.env.LIVEKIT_API_SECRET || "errorsecret"
@@ -12,7 +11,7 @@ export const handleAdminToken = (req: express.Request, res: express.Response) =>
     else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
-        const user = t.verifyToken(token, apiKey, apiSecret)
+        const user = util.verifyToken(token, apiKey, apiSecret)
         const { video, iss, sub, jti } = user
         if ((jti === identity || sub === identity) && video.room === room) {
             res.json({ message: "token already exists!!!", access_token: token })
@@ -20,7 +19,7 @@ export const handleAdminToken = (req: express.Request, res: express.Response) =>
         }
     }
     try {
-        const access_token = t.obtainAdminToken(room, identity, apiKey, apiSecret, participantName, metadata, ttl)
+        const access_token = util.obtainAdminToken(room, identity, apiKey, apiSecret, participantName, metadata, ttl)
         res.cookie("token", access_token, {
             httpOnly: true,
         });
@@ -38,7 +37,7 @@ export const handleMemberToken = (req: express.Request, res: express.Response) =
     else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
-        const user = t.verifyToken(token, apiKey, apiSecret)
+        const user = util.verifyToken(token, apiKey, apiSecret)
         const { video, iss, sub, jti } = user
         if ((jti === identity || sub === identity) && video.room === room) {
             res.json({ message: "token already exists", access_token: token })
@@ -46,7 +45,7 @@ export const handleMemberToken = (req: express.Request, res: express.Response) =
         }
     }
     try {
-        const access_token = t.obtainMemberToken(room, identity, apiKey, apiSecret, participantName)
+        const access_token = util.obtainMemberToken(room, identity, apiKey, apiSecret, participantName)
         res.cookie("token", access_token, {
             httpOnly: true,
         });
@@ -63,7 +62,7 @@ export const handleViewerToken = (req: express.Request, res: express.Response) =
     else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
-        const user = t.verifyToken(token, apiKey, apiSecret)
+        const user = util.verifyToken(token, apiKey, apiSecret)
         const { video, iss, sub, jti } = user
         if ((jti === identity || sub === identity) && video.room === room) {
             res.json({ message: "token already exists", access_token: token })
@@ -71,7 +70,7 @@ export const handleViewerToken = (req: express.Request, res: express.Response) =
         }
     }
     try {
-        const access_token = t.obtainViewerToken(room, identity, apiKey, apiSecret, participantName)
+        const access_token = util.obtainViewerToken(room, identity, apiKey, apiSecret, participantName)
         res.cookie("token", access_token, {
             httpOnly: true,
         });
@@ -88,7 +87,7 @@ export const handleWaitingToken = (req: express.Request, res: express.Response) 
     else if (!identity) return res.status(400).json({ message: 'identity is not provided!!!' })
     const token = req.cookies['token']
     if (token) {
-        const user = t.verifyToken(token, apiKey, apiSecret)
+        const user = util.verifyToken(token, apiKey, apiSecret)
         const { video, iss, sub, jti } = user
         if ((jti === identity || sub === identity) && video.room === room) {
             res.json({ message: "token already exists", access_token: token })
@@ -96,7 +95,7 @@ export const handleWaitingToken = (req: express.Request, res: express.Response) 
         }
     }
     try {
-        const access_token = t.obtainWaitingToken(room, identity, apiKey, apiSecret, participantName)
+        const access_token = util.obtainWaitingToken(room, identity, apiKey, apiSecret, participantName)
         res.cookie("token", access_token, {
             httpOnly: true,
         });

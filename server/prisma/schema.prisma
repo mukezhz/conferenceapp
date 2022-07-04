@@ -35,7 +35,7 @@ model Meeting {
 
 enum StatusMeeting {
   NEW
-  CANCEL
+  CANCELED
   ENDED
 }
 

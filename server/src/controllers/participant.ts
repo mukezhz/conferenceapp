@@ -1,6 +1,6 @@
 import * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
-import * as p from "../utils"
+import * as util from "../utils"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
@@ -10,8 +10,8 @@ export const handleSingleParticipant = async (req: express.Request, res: express
     try {
         const { room = "", identity = "" } = req.params
         if (!room || !identity) return res.status(400).json({ message: 'room or identity is not provided!!!' })
-        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-        const participant = await p.getParticipant(svc, room, identity)
+        const svc = <RoomServiceClient>util.roomService(livekitHost, apiKey, apiSecret)
+        const participant = await util.getParticipant(svc, room, identity)
         if (!participant) return res.status(404).json({ message: "unable to find user in the room!!!" })
         return res.status(200).json({ message: "success", participant })
     } catch (e) {
@@ -25,8 +25,8 @@ export const handleFetchRoomParticipants = async (req: express.Request, res: exp
     try {
         const { room = "" } = req.params
         if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
-        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-        const participants = await p.listParticipants(svc, room)
+        const svc = <RoomServiceClient>util.roomService(livekitHost, apiKey, apiSecret)
+        const participants = await util.listParticipants(svc, room)
         if (!participants) return res.status(400).json({ message: 'unable to fetch participants!!!' })
         return res.status(200).json({ message: "success", participants })
     }
@@ -42,8 +42,8 @@ export const handleRemoveParticipant = async (req: express.Request, res: express
         const { room = "", identity = "" } = req.body
         if (!room) res.status(400).json({ message: 'room name is not provided!!!' })
         else if (!identity) res.status(400).json({ message: 'identity is not provided!!!' })
-        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
-        const result = await p.removeParticipant(svc, room, identity)
+        const svc = <RoomServiceClient>util.roomService(livekitHost, apiKey, apiSecret)
+        const result = await util.removeParticipant(svc, room, identity)
         try {
             const participantIdentity = identity.split('::')[0]
             if (!result) res.status(200).json({ message: `unable to remove the participant: ${participantIdentity}` })
@@ -62,9 +62,9 @@ export const handleUpdateParticipant = async (req: express.Request, res: express
         const { room = '', identity = '', metadata = '', permissions = {} } = req.body
         if (!room) return res.status(400).json({ message: 'room name is not provided!!!' })
         else if (!identity) return res.status(400).json({ message: 'participant identity is not provided!!!' })
-        const svc = <RoomServiceClient>p.roomService(livekitHost, apiKey, apiSecret)
+        const svc = <RoomServiceClient>util.roomService(livekitHost, apiKey, apiSecret)
         try {
-            const result = await p.updateParticipant(svc, room, identity, metadata, permissions)
+            const result = await util.updateParticipant(svc, room, identity, metadata, permissions)
             if (!result) return res.status(500).json({ message: 'unable to update metadata or permissions!!!' })
             return res.status(200).json({ message: 'success', participantInfo: result })
         } catch (e) {

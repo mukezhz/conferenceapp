@@ -1,7 +1,7 @@
 import * as axios from "axios";
 import e, * as express from "express"
 import { RoomServiceClient } from 'livekit-server-sdk';
-import * as w from "../databases";
+import * as db from "../databases";
 import * as util from "../utils"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
@@ -43,9 +43,9 @@ export const handleInitiateWaiting = async (req: express.Request, res: express.R
         else if (!requiredId) return res.status(400).json({ message: 'user id is not provided!!!' })
         else if (!requiredName) return res.status(400).json({ message: 'username is not provided!!!' })
         try {
-            const search = await w.waiting.find(meeting_id, requiredId)
+            const search = await db.waiting.find(meeting_id, requiredId)
             if (search) return res.status(400).json({ message: "data already exists!!!" })
-            const result = await w.waiting.create({ meeting_id: meeting_id, user_id: requiredId, user_name: requiredName, status: upperStatus })
+            const result = await db.waiting.create({ meeting_id: meeting_id, user_id: requiredId, user_name: requiredName, status: upperStatus })
             return res.status(200).json({ message: "success", data: { status: result.status } })
         } catch (e: any) {
             return res.status(400).json({ message: "error while creating!!!", error: e.message })
@@ -88,18 +88,18 @@ export const handleUpdateWaitingStatus = async (req: express.Request, res: expre
         else if (!user_id) return res.status(400).json({ message: 'user id is not provided!!!' })
         else if (!username) return res.status(400).json({ message: 'username is not provided!!!' })
         try {
-            const meeting = await w.meeting.findById(meeting_id)
+            const meeting = await db.meeting.findById(meeting_id)
             if (!meeting) return res.status(404).json({ message: 'meeting doesn\'t exist by provided meeting id!!!' })
-            const search = await w.waiting.find(meeting_id, requiredId)
+            const search = await db.waiting.find(meeting_id, requiredId)
             if (!search) return res.status(400).json({ message: "unable to find in waiting!!!" })
-            // const result = await w.waiting.updateStatus(meeting_id, requiredId, upperStatus)
+            // const result = await db.waiting.updateStatus(meeting_id, requiredId, upperStatus)
             let data = {}
             if (upperStatus === 'APPROVED') {
                 const memberToken = util.obtainMemberToken(meeting.room, requiredId, apiKey, apiSecret, requiredName)
-                const result = await w.waiting.updateStatusToken(meeting_id, requiredId, upperStatus, memberToken)
+                const result = await db.waiting.updateStatusToken(meeting_id, requiredId, upperStatus, memberToken)
                 data = { status: result.status, access_token: memberToken }
             } else {
-                const result = await w.waiting.updateStatus(meeting_id, requiredId, upperStatus)
+                const result = await db.waiting.updateStatus(meeting_id, requiredId, upperStatus)
                 data = { status: result.status }
             }
             return res.status(200).json({ message: "success", data: data })
@@ -117,14 +117,14 @@ export const handleApproveAll = async (req: express.Request, res: express.Respon
     const { meeting_id } = req.params
     if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
     try {
-        const results = await w.waiting.findByStatus(meeting_id, 'WAITING')
-        const search = await w.meeting.findById(meeting_id)
+        const results = await db.waiting.findByStatus(meeting_id, 'WAITING')
+        const search = await db.meeting.findById(meeting_id)
         if (!results.length) return res.status(400).json({ message: "all request has already been approved!!!" })
         if (!search) return res.status(400).json({ message: "meeting doesn't exists !!!" })
         const asyncForLoop = async (results: any) => {
             await Promise.all(results.map(async (result: any) => {
                 const memberToken = util.obtainMemberToken(search.room, result.user_id, apiKey, apiSecret, result.user_name)
-                return await w.waiting.updateStatusToken(meeting_id, result.user_id, 'APPROVED', memberToken)
+                return await db.waiting.updateStatusToken(meeting_id, result.user_id, 'APPROVED', memberToken)
             }))
         }
         await asyncForLoop(results)
