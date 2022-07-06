@@ -187,7 +187,6 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
             url: util.urls[countryCode]
         })
         if (search?.waiting_room_enabled) {
-            // TODO: fill the waiting table return status
             const searchWaiting = await db.waiting.find(meeting_id, userId)
             if (searchWaiting) return res.status(400).json({
                 message: "waiting is already created!!!",
@@ -200,7 +199,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
             })
             return res.status(200).json({ message: 'success', status: result.status })
         }
-        // if waiting=true return waiting token
+        // if waiting=false return waiting token
         return res.status(200).json({
             message: 'success',
             access_token: util.obtainMemberToken(search.room, identity, apiKey, apiSecret, username) || 'error',
@@ -228,11 +227,16 @@ export const handleSearchMeeting = async (req: express.Request, res: express.Res
         const results = JSON.parse(util.toJson(searchMeetings))
         function asyncMap(arrs: any) {
             return Promise.all(arrs.map(async (data: any) => {
-                const svc = livekit.roomService(url.urls[data.country], apiKey, apiSecret)
-                if (!svc) return { ...data, active_participants: [] }
-                const active_participants = await livekit.listParticipants(svc, data.room)
-                if (!active_participants) return { ...data, active_participants: [] }
-                return { ...data, active_participants: active_participants, room: data.room }
+                const svc = livekit.roomService(url.urls[data?.country].replace('wss', 'https'), apiKey, apiSecret)
+                if (!svc) return "service not created!!!"
+                const active_participants = await livekit.listParticipants(svc, data?.room || data?.id)
+                const room = await livekit.listRooms(svc, [data?.room || data?.id])
+                console.log(room)
+                if (!room) return "room not found"
+                delete data?.room
+                if (!active_participants?.length) return { ...data, active_participants: [] }
+                const identities = active_participants.map(participant => participant.identity)
+                return { ...data, active_participants: identities, room_created_at: room?.[0]?.creationTime }
             }))
         }
         const resultWithParticipants = await asyncMap(results)
@@ -249,13 +253,13 @@ export const handleSearchActiveMember = async (req: express.Request, res: expres
     try {
         const searchMeeting = await db?.meeting.findById(meeting_id)
         if (!searchMeeting) return res.status(404).json({ message: "meeting doesn't exists!!!" })
-        const svc = livekit.roomService(url.urls[searchMeeting.country], apiKey, apiSecret)
+        const svc = livekit.roomService(url.urls[searchMeeting.country].replace('wss', 'https'), apiKey, apiSecret)
         if (!svc) return res.status(500).json({ message: "error while initiating service client!!!" })
         const rooms = await livekit.listRooms(svc, [searchMeeting?.room])
         if (!rooms || !rooms.length) return res.status(400).json({ message: "room has not been created!!!" })
         const active_participants = await livekit.listParticipants(svc, searchMeeting.room)
         if (!active_participants?.length) return res.json({ message: "success", participants: [] })
-        const identities = active_participants?.map(participant => participant.identity)
+        const identities = active_participants.map(participant => participant.identity)
         return res.json({ message: "success", participants: identities, room_created_at: rooms[0].creationTime })
     } catch (e) {
         console.error(e)

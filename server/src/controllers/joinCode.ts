@@ -33,7 +33,7 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
     else if (!expire_time) return res.status(400).json({ message: 'expire time is not provided!!!' })
     const time = Number(expire_time)
     if (!time) return res.status(400).json({ message: 'expire time is not time stamp number!!!' })
-    let requiredIdentity = ''
+    let requiredIdentity = identity
     try {
         if (accesstoken) {
             const result = await axios.default(config)
@@ -42,10 +42,13 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
         }
         if (!requiredIdentity) return res.status(400).json({ message: 'user\'s identity is not provided!!!' })
         const meet = await db.meeting.findById(meeting_id)
+        console.log(meet)
         if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
         const search = await db.joinCode.findById(meeting_id)
-        if (!search) return res.status(200).json({ message: 'unable to create join code!!!' })
-        if (Date.now() - Number(search.expire_time) > 0) return res.status(400).json({ message: "code has been expired!!!" })
+        if (search) {
+            if (Date.now() - Number(search.expire_time) > 0) return res.status(400).json({ message: "code has been expired!!!" })
+            return res.status(200).json({ message: 'success', data: { join_code: search.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${search.join_code}` } })
+        }
         const data = await db.joinCode.create({ ...req.body, identity: requiredIdentity, expire_time: new Date(time) })
         return res.status(200).json({ message: "success", data: { join_code: data.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${data.join_code}` } })
     } catch (e: any) {
@@ -84,8 +87,8 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
     };
     if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
     else if (!join_code) return res.status(400).json({ message: 'join code is not provided!!!' })
-    let requiredIdentity = ''
-    let requiredName = ''
+    let requiredIdentity = identity
+    let requiredName = name
     try {
         if (accesstoken) {
             const result = await axios.default(config)

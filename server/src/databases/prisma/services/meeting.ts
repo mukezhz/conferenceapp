@@ -7,7 +7,7 @@ export const create = async (data: any) => {
             data: { ...data, created_at: Date.now(), updated_at: Date.now() }
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while creating!!!")
+        console.error(e, "[service]: error while creating meeting!!!")
         throw new Error("error while creating!!!")
     }
 }
@@ -20,7 +20,7 @@ export const remove = async (uuid: string) => {
             },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while removing!!!")
+        console.error(e, "[service]: error while removing meeting!!!")
         throw new Error('error while removing!!!')
     }
 }
@@ -34,7 +34,7 @@ export const update = async (data: any) => {
             data: { ...data, updated_at: Date.now() },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while updating!!!")
+        console.error(e, "[service]: error while updating meeting!!!")
         throw new Error('error while updating!!!')
     }
 }
@@ -51,7 +51,7 @@ export const updateStatus = async (uuid: string, status: any) => {
             },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while updating status!!!")
+        console.error(e, "[service]: error while updating status meeting!!!")
         throw new Error('error while updating status!!!')
     }
 }
@@ -68,7 +68,7 @@ export const updateWaitingRoom = async (uuid: string, value: boolean) => {
             },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while updating waiting room!!!")
+        console.error(e, "[service]: error while updating waiting room meeting!!!")
         throw new Error('error while updating waiting room!!!')
     }
 }
@@ -85,7 +85,7 @@ export const updateParticipant = async (uuid: string, participants: any) => {
             },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while updating participant!!!")
+        console.error(e, "[service]: error while updating participant meeting!!!")
         throw new Error('error while updating participant!!!')
     }
 }
@@ -109,7 +109,7 @@ export const addParticipant = async (id: string, participants: any) => {
             },
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while adding participant!!!")
+        console.error(e, "[service]: error while adding participant meeting!!!")
         throw new Error('error while adding participant!!!')
     }
 }
@@ -125,7 +125,7 @@ export const findAll = async (cursor: any, limit: any) => {
             take: lim
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while finding all!!!")
+        console.error(e, "[service]: error while finding all meeting!!!")
         throw new Error('error while finding all!!!')
     }
 }
@@ -136,7 +136,7 @@ export const findOne = async (data: any) => {
             where: data,
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while finding one!!!")
+        console.error(e, "[service]: error while finding one meeting!!!")
         throw new Error('error while finding one!!!')
     }
 }
@@ -149,7 +149,7 @@ export const findById = async (id: string) => {
             }
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while finding by id!!!")
+        console.error(e, "[service]: error while finding by id meeting!!!")
         throw new Error('error while finding by id!!!')
     }
 }
@@ -174,7 +174,7 @@ export const findByRoom = async (room: string) => {
             }
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while finding by room!!!")
+        console.error(e, "[service]: error while finding by room meeting!!!")
         throw new Error('error while finding by room!!!')
     }
 }
@@ -190,7 +190,7 @@ export const getTokenById = async (meeting_id: string) => {
             }
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while fetching token from meeting id!!!")
+        console.error(e, "[service]: error while fetching token from meeting id meeting!!!")
         throw new Error('error while fetching token from meeting id!!!')
     }
 }
@@ -219,7 +219,7 @@ export const findByDate = async (startDate: number, endDate: number, appId: stri
             }
         })
     } catch (e: any) {
-        console.error(e, "[service]: error while finding by room!!!")
+        console.error(e, "[service]: error while finding by room meeting!!!")
         throw new Error('error while finding by room!!!')
     }
 }

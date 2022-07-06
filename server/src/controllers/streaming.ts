@@ -2,7 +2,7 @@ import * as livekit from 'livekit-server-sdk';
 import * as express from "express"
 import * as util from "../utils"
 import * as egress from "livekit-server-sdk/dist/proto/livekit_egress"
-import * as service from "../databases/mongo/services"
+import * as db from "../databases"
 
 const livekitHost = process.env.LIVEKIT_URL || 'hostname'
 const apiKey = process.env.LIVEKIT_API_KEY || 'apikey'
@@ -59,27 +59,37 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
         }
         const egressInfo: egress.EgressInfo | undefined = await util.startStreamEgress(ec, platform, streamKey, roomName, layout, newOptions, audioOnly, videoOnly, customBaseUrl)
         if (!egressInfo) return res.status(500).json({ message: 'unable to start streaming!!!' })
-        const stream = new service.StreamService()
         try {
-            await stream.createStream({
-                hostName: hostname,
-                identity: identity,
+            const egress = await db.egress.create({
+                egress_id: egressInfo.egressId,
+                status: !egressInfo.status ? 'STARTED' : 'ENDED',
+                started_at: egressInfo.startedAt,
+                ended_at: egressInfo.endedAt,
+                layout: egressInfo.roomComposite?.layout
+            })
+            if (!egress) return res.status(400).json({ message: "error while creating egress!!!" })
+            const streaming = await db.streaming.create({
+                room_id: egressInfo.roomId,
+                egress_id: egressInfo.egressId,
+                room_name: roomName,
+                hostname: hostname,
                 email: email,
-                roomName: roomName,
-                roomId: egressInfo.roomId,
-                egressId: egressInfo.egressId,
-                rooms: {
-                    name: roomName,
-                    egress: egressInfo
+                identity: identity,
+                platform: platform,
+                started_at: Date.now(),
+            })
+            if (!streaming) return res.status(400).json({ message: "error while creating streaming!!!" })
+
+            return res.status(200).json({
+                message: 'success', data: {
+                    stream: JSON.parse(util.toJson(streaming)),
+                    egress: JSON.parse(util.toJson(egress))
                 }
             })
         } catch (e) {
             console.error('error', e)
+            return res.status(500).json({ message: "something went wrong!!!" })
         }
-        // model.StreamModel.create({
-
-        // })
-        return res.status(200).json({ message: 'success', egress: egressInfo })
     } catch (e) {
         console.error(e)
         console.error('[Controller]: error while handling start live stream!!!')
@@ -88,14 +98,16 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
 }
 
 export const handleStopLiveStream = async (req: express.Request, res: express.Response) => {
+    const { egressId = '' }: { egressId: string } = req.body
     try {
+        const stream = await db.streaming.findByEgress(egressId)
+        if (!stream) return res.status(400).json({ message: 'unable to find stream!!!' })
+        const result = await db.streaming.updateEndDate(stream.id, Date.now())
+        if (!result) return res.status(400).json({ message: 'unable to update end date!!!' })
         const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
-        const { egressId = '' }: { egressId: string } = req.body
         const egressInfo = await util.stopEgress(ec, egressId)
         if (!egressInfo) return res.status(500).json({ message: 'unable to stop streaming!!!' })
-        const stream = new service.StreamService()
-        const result = await stream.updateStreamEndDate(egressId, new Date().toISOString())
-        return res.status(200).json({ message: 'success', egress: result })
+        return res.status(200).json({ message: 'success', egress: JSON.parse(util.toJson(result)) })
     } catch (e) {
         console.error(e)
         console.error('[Controller]: error while handling stop live stream!!!')
@@ -122,14 +134,15 @@ export const handleUpdateStream = async (req: express.Request, res: express.Resp
         return res.status(500).json({ message: 'error while updating stream!!!' })
     }
 }
+
 export const handleGetStreamInfo = async (req: express.Request, res: express.Response) => {
-    const stream = new service.StreamService()
     const { roomName = '', email = '' }: { roomName: string, email: string } = req.body
     try {
         if (!roomName) res.status(400).json({ message: 'room name is not provided!!!' })
-        const streamInfos = await stream.findStreamByRoomName(roomName, email)
+        else if (!email) res.status(400).json({ message: 'email is not provided!!!' })
+        const streamInfos = await db.streaming.findByRoomName(roomName, email)
         if (!streamInfos) return res.status(500).json({ message: 'unable to find stream!!!' })
-        return res.status(200).json({ message: 'success', streams: streamInfos })
+        return res.status(200).json({ message: 'success', streams: JSON.parse(util.toJson(streamInfos)) })
     } catch (e) {
         console.error(e)
         console.error('[Controller]: error while handling update stream!!!')

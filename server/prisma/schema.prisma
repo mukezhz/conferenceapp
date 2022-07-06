@@ -76,30 +76,23 @@ model Streaming {
   hostname   String
   email      String?
   identity   String
-  room       Room     @relation(fields: [roomName], references: [name])
+  platform   String
+  egress     Egress   @relation(fields: [egress_id], references: [egress_id], onDelete: Cascade)
+  started_at BigInt   @default(0)
+  ended_at     BigInt   @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  roomName String
   @@map(name: "streamings")
 }
 
-model Room {
-  name       String @unique
-  start_time String
-  end_time   String
-  egress     Egress @relation(fields: [egressId], references: [egressId])
-
-  Streaming Streaming[]
-  egressId  String
-  @@map(name: "rooms")
-}
-
 model Egress {
-  egressId  String @unique
-  roomId    String
-  status    String
-  startedAt Int
-  endedAt   Int
-  room      Room[]
+  egress_id  String      @id
+  status     String
+  started_at Int
+  ended_at   Int
+  layout     String
+  Streaming  Streaming[]
+
+  @@map(name: "egress")
 }
