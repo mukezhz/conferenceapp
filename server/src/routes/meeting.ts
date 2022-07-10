@@ -17,10 +17,10 @@ router.get('/id/:id', m.handleFindById)
 // router.get('/id/:id', m.handleFindByUserId)
 
 // update status
-router.patch('/status', m.handleUpdateStatus)
+router.put('/status', m.handleUpdateStatus)
 
 // update waiting room enabled
-router.patch('/waiting', m.handleUpdateWaiting)
+router.put('/waiting', m.handleUpdateWaiting)
 
 router.use('/join/:meeting_id', mw.tokenValidator)
 
