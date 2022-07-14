@@ -42,7 +42,7 @@ enum StatusMeeting {
 model JoinCode {
   meeting_id  String
   Meeting     Meeting? @relation(fields: [meeting_id], references: [id], onDelete: Cascade)
-  expire_time DateTime @default(now())
+  expire_time BigInt   @default(0)
   identity    String
   join_code   String   @unique
 
@@ -79,7 +79,7 @@ model Streaming {
   platform   String
   egress     Egress   @relation(fields: [egress_id], references: [egress_id], onDelete: Cascade)
   started_at BigInt   @default(0)
-  ended_at     BigInt   @default(0)
+  ended_at   BigInt   @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

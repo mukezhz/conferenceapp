@@ -83,7 +83,7 @@ export const updateToken = async (meetingId: string, userId: string, token: stri
     }
 }
 
-export const updateStatusToken = async (meetingId: string, userId: string, status: any, token: string) => {
+export const updateStatusToken = async (meetingId: string, userId: string, status: any, token: string | null) => {
     try {
         return await waiting.update({
             where: {
@@ -185,6 +185,20 @@ export const findByMeetingId = async (meetingId: string) => {
     }
 }
 
+export const findByMeetingIdAndUserId = async (meetingId: string, userId: string) => {
+    try {
+        return await waiting.findFirst({
+            where: {
+                meeting_id: meetingId,
+                user_id: userId
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while finding by meeting id and user id waiting!!!")
+        throw new Error('error while finding by meeting id and user id!!!')
+    }
+}
+
 export const findByUserName = async (userName: string) => {
     try {
         return await waiting.findFirst({
@@ -194,6 +208,22 @@ export const findByUserName = async (userName: string) => {
         })
     } catch (e: any) {
         console.error(e, "[service]: error while finding meeting id waiting!!!")
+        throw new Error(e.message)
+    }
+}
+
+export const deleteRow = async (meetingId: string, userId: string) => {
+    try {
+        return await waiting.delete({
+            where: {
+                waiting_identifier: {
+                    meeting_id: meetingId,
+                    user_id: userId
+                }
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while deleting waiting!!!")
         throw new Error(e.message)
     }
 }

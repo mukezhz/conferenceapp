@@ -77,14 +77,15 @@ export const handleFindAll = async (req: express.Request, res: express.Response)
 }
 
 export const handleFindById = async (req: express.Request, res: express.Response) => {
+    const { id } = req.params
     try {
-        const { id } = req.params
         if (!id) return res.status(400).json({ message: "id has not been provided!!!" })
         const result = await db.meeting.findById(id)
+
         if (!result) return res.status(200).json({ message: "unable to find data from provided id!!!" })
-        return res.json({ message: "success", data: result })
+        return res.json({ message: "success", data: JSON.parse(util.toJson(result)) })
     } catch (e) {
-        return res.status(500).json({ message: 'server error' })
+        return res.status(500).json({ message: 'server error [unable to find user by provided id]!!!' })
     }
 }
 
@@ -114,14 +115,15 @@ export const handleUpdateStatus = async (req: express.Request, res: express.Resp
         if (status === 'ENDED' || status === 'CANCELED') {
             const svc = livekit.roomService(url.urls[search.country].replace('wss', 'https'), apiKey, apiSecret)
             if (!svc) return res.status(500).json({ message: "error while creating service!!!" })
-            await svc.deleteRoom(search.room)
+            const room = await svc.listRooms([search?.room])
+            if (room.length) await svc.deleteRoom(search.room)
         }
         const result = await db.meeting.updateStatus(id, upperStatus)
         if (!result) return res.status(200).json({ message: "unable to update status!!!" })
         return res.json({ message: "success", data: { status: result.status } })
     } catch (e) {
         console.error(e)
-        return res.status(500).json({ message: 'server error only [NEW, CANCEL] are possible!!!' })
+        return res.status(500).json({ message: 'server error only [NEW, CANCELED, ENDED] are possible!!!' })
     }
 }
 
@@ -231,7 +233,6 @@ export const handleSearchMeeting = async (req: express.Request, res: express.Res
                 if (!svc) return "service not created!!!"
                 const active_participants = await livekit.listParticipants(svc, data?.room || data?.id)
                 const room = await livekit.listRooms(svc, [data?.room || data?.id])
-                console.log(room)
                 if (!room) return "room not found"
                 delete data?.room
                 if (!active_participants?.length) return { ...data, active_participants: [] }

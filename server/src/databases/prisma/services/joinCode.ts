@@ -46,6 +46,26 @@ export const update = async (identity: string, meetingId: string, data: any) => 
     }
 }
 
+export const updateExpireTime = async (identity: string, meetingId: string, expireTime: number) => {
+    try {
+        return await joinCode.update({
+            where: {
+                join_code_identifier: {
+                    identity: identity,
+                    meeting_id: meetingId
+                },
+            },
+            data: {
+                expire_time: expireTime,
+                join_code: nanoid.customAlphabet('qwertyuioplkjhgfdsazxcvbnm', 10)()
+            },
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while updating expire time in join code!!!")
+        throw new Error('error while updating!!!')
+    }
+}
+
 export const findAll = async (cursor: any, limit: any) => {
     let data;
     const cur: any = parseInt(cursor)
@@ -101,27 +121,11 @@ export const findByMeetingJoinCode = async (meetingId: string, identity: string,
     }
 }
 
-export const findByMeetingId = async (meetingId: string, identity: string) => {
-    try {
-        return await joinCode.findUnique({
-            where: {
-                join_code_identifier: {
-                    meeting_id: meetingId,
-                    identity: identity
-                }
-            }
-        })
-    } catch (e: any) {
-        console.error(e, "[service]: error while finding meeting id join code!!!")
-        throw new Error('error while finding meeting id!!!')
-    }
-}
-
 export const findById = async (meetingId: string) => {
     try {
         return await joinCode.findFirst({
             where: {
-                meeting_id: meetingId,
+                meeting_id: meetingId
             }
         })
     } catch (e: any) {
@@ -130,11 +134,24 @@ export const findById = async (meetingId: string) => {
     }
 }
 
-export const findMeetingIdJoinCode = async (meetingId: string, code: string) => {
+export const findMeetingIdIdentity = async (meetingId: string, identity: string) => {
     try {
         return await joinCode.findFirst({
             where: {
                 meeting_id: meetingId,
+                identity: identity
+            }
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while finding meeting id and join code!!!")
+        throw new Error(e.message)
+    }
+}
+
+export const findMeetingByJoinCode = async (code: string) => {
+    try {
+        return await joinCode.findFirst({
+            where: {
                 join_code: code
             }
         })

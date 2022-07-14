@@ -40,19 +40,18 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
             const user_id = result.data?.user_profile?.user_id || null
             requiredIdentity = user_id || identity
         }
-        if (!requiredIdentity) return res.status(400).json({ message: 'user\'s identity is not provided!!!' })
+        if (!requiredIdentity) return res.status(400).json({ message: "user's identity is not provided!!!" })
         const meet = await db.meeting.findById(meeting_id)
-        console.log(meet)
-        if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
-        const search = await db.joinCode.findById(meeting_id)
-        if (search) {
-            if (Date.now() - Number(search.expire_time) > 0) return res.status(400).json({ message: "code has been expired!!!" })
-            return res.status(200).json({ message: 'success', data: { join_code: search.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${search.join_code}` } })
+        if (!meet) return res.status(404).json({ message: "meeting doesn't exist by provided meeting id!!!" })
+        const search = await db.joinCode.findMeetingIdIdentity(meeting_id, requiredIdentity)
+        if (search && search?.join_code) {
+            const result = await db.joinCode.updateExpireTime(requiredIdentity, meeting_id, time)
+            return res.status(200).json({ message: "success", data: { join_code: result.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${result.join_code}` } })
         }
-        const data = await db.joinCode.create({ ...req.body, identity: requiredIdentity, expire_time: new Date(time) })
+        const data = await db.joinCode.create({ meeting_id: meeting_id, identity: requiredIdentity, expire_time: time })
         return res.status(200).json({ message: "success", data: { join_code: data.join_code, join_url: `${apiUrl}/api/meetings/${meeting_id}/${data.join_code}` } })
     } catch (e: any) {
-        // console.error(e)
+        console.error(e)
         console.error("inserting to database!!!")
         return res.status(500).json({ message: e.message })
     }
@@ -97,19 +96,28 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
             requiredIdentity = user_id || identity
             requiredName = userName || name
         }
-        if (!requiredIdentity) return res.status(400).json({ message: 'user\'s identity is not provided!!!' })
-        else if (!requiredName) return res.status(400).json({ message: 'user\'s name is not provided!!!' })
-        const search = await db.joinCode.findByMeetingJoinCode(meeting_id, requiredIdentity, join_code)
-        if (!search) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id and room name!!!' })
+        if (!requiredIdentity) return res.status(400).json({ message: "user's identity is not provided!!!" })
+        else if (!requiredName) return res.status(400).json({ message: "user's name is not provided!!!" })
         const meet = await db.meeting.findById(meeting_id)
-        if (!meet) return res.status(404).json({ message: 'meeting dosen\'t exist by provided meeting id!!!' })
-        const countryCode = meet.country
-        if ((new Date().getTime() - search.expire_time.getTime()) > 0) return res.status(200).json({ message: 'date have been expired!!!' })
-        const memberToken = util.obtainMemberToken(meet.room, requiredIdentity, apiKey, apiSecret, requiredName)
-        return res.status(200).json({ message: "success", data: { token: memberToken, url: util.urls[countryCode] } })
+        if (!meet) return res.status(404).json({ message: "meeting doesn't exist by provided meeting id!!!" })
+        const search = await db.joinCode.findMeetingByJoinCode(join_code)
+        if (!search) return res.status(404).json({ message: "join code doesn't exist by provided code!!!" })
+        if ((Date.now() - Number(search.expire_time)) > 0) return res.status(200).json({ message: 'join code have been expired!!!' })
+        try {
+            const search = await db.waiting.findByMeetingIdAndUserId(meeting_id, requiredIdentity)
+            if (!search) {
+                const result = await db.waiting.create({ meeting_id: meeting_id, user_id: requiredIdentity, user_name: requiredName, status: 'WAITING' })
+                if (!result) return res.status(400).json({ message: "error while adding user to waiting room!!!" })
+                return res.status(200).json({ message: "success", status: result.status })
+            }
+            return res.status(200).json({ message: "success", status: search.status })
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({ message: "dublicate user exists!!!" })
+        }
     } catch (e: any) {
         console.error(e)
         console.error("inserting to database!!!")
-        return res.status(500).json({ message: "token expires!!!" })
+        return res.status(500).json({ message: "error while finding meeting id from join code!!!" })
     }
 }

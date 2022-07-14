@@ -20,12 +20,11 @@ interface WebHook {
 export const handleWebEvent = async (req: express.Request, res: express.Response) => {
     // event is a WebhookEvent object
     try {
-        console.log(req.body)
         const { event = '' }: WebHook = req.body
         if (!event) return
-        const { room, participant } = req.body
-        const { sid: rid, name: roomName } = room
-        const { sid: pid, name: participantName, identity } = participant
+        const { room = '', participant = '' } = req.body
+        const { name: roomName = '' } = room
+        const { name: participantName = '', identity = '' } = participant
         const meeting = await db.meeting.findByRoom(roomName)
         if (!meeting || !meeting.webhook_url) {
             console.log('[Error]: either meeting not found or webhook_url is null')

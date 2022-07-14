@@ -143,7 +143,7 @@ export const findOne = async (data: any) => {
 
 export const findById = async (id: string) => {
     try {
-        return await meeting.findUnique({
+        return await meeting.findFirst({
             where: {
                 id: id
             }
@@ -168,7 +168,7 @@ export const findById = async (id: string) => {
 
 export const findByRoom = async (room: string) => {
     try {
-        return await meeting.findUnique({
+        return await meeting.findFirst({
             where: {
                 room: room,
             }
