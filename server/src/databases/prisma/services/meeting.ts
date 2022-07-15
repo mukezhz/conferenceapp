@@ -90,6 +90,22 @@ export const updateParticipant = async (uuid: string, participants: any) => {
     }
 }
 
+export const updateMetadata = async (id: string, metadata: string) => {
+    try {
+        return await meeting.update({
+            where: {
+                id: id,
+            },
+            data: {
+                metadata: metadata
+            },
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while updating participant meeting!!!")
+        throw new Error('error while updating participant!!!')
+    }
+}
+
 export const addParticipant = async (id: string, participants: any) => {
     try {
         const uniqueParticipants = meeting.findUnique({

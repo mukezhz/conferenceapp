@@ -19,7 +19,7 @@ export const handleInitiateWaiting = async (req: express.Request, res: express.R
         method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
-            'Authorization': `Bearer ${accesstoken}`,
+            'Authorization': accesstoken,
             'grpc-metadata-app-id': grpcAppId,
             'grpc-metadata-web-api-key': grpcWebKey
         }
@@ -201,11 +201,11 @@ export const handleFetchMemberAccordingToUserIdMeetingIdJoinCode = async (req: e
     };
     let requiredId = user_id
     try {
-        if (accesstoken) {
-            const result = await axios.default(config)
-            const userId = result.data?.user_profile?.user_id || null
-            requiredId = userId || user_id
-        }
+        // if (accesstoken) {
+        //     const result = await axios.default(config)
+        //     const userId = result.data?.user_profile?.user_id || null
+        //     requiredId = userId || user_id
+        // }
         if (!requiredId) return res.status(400).json({ message: 'user id is not provided!!!' })
         const meeting = await db.meeting.findById(meeting_id)
         if (!meeting) return res.status(400).json({ message: "meeting doesn't exists with provided id!!!" })

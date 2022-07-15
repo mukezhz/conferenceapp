@@ -79,7 +79,7 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
         method: 'get',
         url: `${everestUrl}/account/profiles`,
         headers: {
-            'Authorization': `Bearer ${accesstoken}`,
+            'Authorization': accesstoken,
             'grpc-metadata-app-id': grpcAppId,
             'grpc-metadata-web-api-key': grpcWebKey
         }
@@ -89,13 +89,14 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
     let requiredIdentity = identity
     let requiredName = name
     try {
-        if (accesstoken) {
-            const result = await axios.default(config)
-            const userName = result.data?.user_profile?.displayName || null
-            const user_id = result.data?.user_profile?.user_id || null
-            requiredIdentity = user_id || identity
-            requiredName = userName || name
-        }
+        // if (accesstoken) {
+        //     const result = await axios.default(config)
+        //     console.log("result", result)
+        //     const userName = result.data?.user_profile?.displayName || null
+        //     const user_id = result.data?.user_profile?.user_id || null
+        //     requiredIdentity = user_id || identity
+        //     requiredName = userName || name
+        // }
         if (!requiredIdentity) return res.status(400).json({ message: "user's identity is not provided!!!" })
         else if (!requiredName) return res.status(400).json({ message: "user's name is not provided!!!" })
         const meet = await db.meeting.findById(meeting_id)

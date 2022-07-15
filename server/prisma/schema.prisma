@@ -25,11 +25,13 @@ model Meeting {
   created_at           BigInt        @default(0)
   updated_at           BigInt        @default(0)
   token                String?       @default("")
-  webhook_url          String?
+  metadata             String?
+  webhook_url          String?       @default("")
 
   JoinCode JoinCode[]
   Waiting  Waiting[]
 
+  @@index([start_date], type: BTree)
   @@map(name: "meetings")
 }
 

@@ -172,6 +172,8 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         const search = await db.meeting.findById(meeting_id)
         if (search?.status === "ENDED") return res.status(400).json({ message: "meeting has been ended!!!" })
         if (!search?.room) return res.status(404).json({ message: 'room doesn\'t exists!!!' })
+        const update = await db.meeting.updateMetadata(meeting_id, metadata)
+        if (!update) return res.status(500).json({ message: "error while updating metadata!!!" })
         const countryCode: string = search.country
         const { hosts = [], members = [] } = search?.participants as { hosts: [], members: [] }
         const searchHost = hosts.filter(d => d === userId)
@@ -185,7 +187,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         const searchMember = members.filter(d => d === userId)
         if (searchMember.length) return res.status(200).json({
             message: 'success',
-            access_token: util.obtainMemberToken(search.room, userId, apiKey, apiSecret, userName) || 'error',
+            access_token: util.obtainMemberToken(search.room, userId, apiKey, apiSecret, userName, metadata) || 'error',
             url: util.urls[countryCode]
         })
         if (search?.waiting_room_enabled) {
@@ -204,7 +206,7 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         // if waiting=false return waiting token
         return res.status(200).json({
             message: 'success',
-            access_token: util.obtainMemberToken(search.room, identity, apiKey, apiSecret, username) || 'error',
+            access_token: util.obtainMemberToken(search.room, identity, apiKey, apiSecret, username, metadata) || 'error',
             url: util.urls[countryCode]
         })
 

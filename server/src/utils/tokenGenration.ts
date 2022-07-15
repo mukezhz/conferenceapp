@@ -17,7 +17,7 @@ type VerifyType = {
 
 export function obtainAdminToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string, metadata: string, ttl: string | number) {
     const at = new AccessToken(apiKey, apiSecret, {
-        metadata,
+        metadata: metadata,
         name: participantName,
         identity: identity,
         ttl
@@ -38,10 +38,11 @@ export function obtainAdminToken(roomName: string, identity: string, apiKey: str
     return token
 }
 
-export function obtainMemberToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string,) {
+export function obtainMemberToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string, metadata: string = "") {
     const at = new AccessToken(apiKey, apiSecret, {
         identity: identity,
-        name: participantName
+        name: participantName,
+        metadata: metadata
     });
     at.addGrant({
         room: roomName,
@@ -54,11 +55,12 @@ export function obtainMemberToken(roomName: string, identity: string, apiKey: st
     return token
 }
 
-export function obtainViewerToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string) {
+export function obtainViewerToken(roomName: string, identity: string, apiKey: string, apiSecret: string, participantName: string, metadata: string = "") {
     try {
         const at = new AccessToken(apiKey, apiSecret, {
             identity: identity,
-            name: participantName
+            name: participantName,
+            metadata: metadata
         });
         at.addGrant({
             room: roomName,
