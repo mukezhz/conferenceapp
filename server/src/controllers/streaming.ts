@@ -10,32 +10,32 @@ const apiSecret = process.env.LIVEKIT_API_SECRET || 'apisecret'
 
 
 export const handleStartLiveStream = async (req: express.Request, res: express.Response) => {
+    const {
+        hostname = '',
+        identity = '',
+        email = '',
+        platform = '',
+        streamKey = '',
+        roomName = '',
+        layout = '',
+        options = undefined,
+        audioOnly = undefined,
+        videoOnly = undefined,
+        customBaseUrl = ''
+    }: {
+        hostname: string,
+        identity: string,
+        email: string,
+        platform: string,
+        streamKey: string,
+        roomName: string,
+        layout: string,
+        options: any,
+        videoOnly: any,
+        audioOnly: any,
+        customBaseUrl: string
+    } = req.body
     try {
-        const {
-            hostname = '',
-            identity = '',
-            email = '',
-            platform = '',
-            streamKey = '',
-            roomName = '',
-            layout = '',
-            options = undefined,
-            audioOnly = undefined,
-            videoOnly = undefined,
-            customBaseUrl = ''
-        }: {
-            hostname: string,
-            identity: string,
-            email: string,
-            platform: string,
-            streamKey: string,
-            roomName: string,
-            layout: string,
-            options: any,
-            videoOnly: any,
-            audioOnly: any,
-            customBaseUrl: string
-        } = req.body
         const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
         let newOptions: egress.EncodingOptions = {
             /** (default 1920) */
@@ -57,7 +57,7 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
             /** (default 4500) */
             videoBitrate: 4500
         }
-        const egressInfo: egress.EgressInfo | undefined = await util.startStreamEgress(ec, platform, streamKey, roomName, layout, newOptions, audioOnly, videoOnly, customBaseUrl)
+        const egressInfo: egress.EgressInfo | undefined = await util.startStreamEgress(ec, platform, streamKey, roomName, layout, 2, audioOnly, videoOnly, customBaseUrl)
         if (!egressInfo) return res.status(500).json({ message: 'unable to start streaming!!!' })
         try {
             const egress = await db.egress.create({
@@ -90,10 +90,10 @@ export const handleStartLiveStream = async (req: express.Request, res: express.R
             console.error('error', e)
             return res.status(500).json({ message: "something went wrong!!!" })
         }
-    } catch (e) {
-        console.error(e)
+    } catch (e: any) {
+        // console.error(e)
         console.error('[Controller]: error while handling start live stream!!!')
-        return res.status(500).json({ message: 'error while starting stream!!!' })
+        return res.status(500).json({ message: e || 'error while starting stream!!!' })
     }
 }
 

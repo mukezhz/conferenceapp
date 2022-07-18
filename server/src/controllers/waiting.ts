@@ -33,10 +33,10 @@ export const handleInitiateWaiting = async (req: express.Request, res: express.R
         }
         if (accesstoken) {
             const result = await axios.default(config)
-            const userName = result.data?.user_profile?.displayName || null
-            const userId = result.data?.user_profile?.user_id || null
-            requiredId = userId || user_id
-            requiredName = userName || username
+            const userName = result?.data?.user_profile?.displayName || null
+            const userId = result?.data?.user_profile?.user_id || null
+            requiredId = userId || user_id || null
+            requiredName = userName || username || null
         }
         if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
         else if (!requiredId) return res.status(400).json({ message: 'user id is not provided!!!' })
@@ -168,8 +168,8 @@ export const handleFetchMemberAccordingToUserId = async (req: express.Request, r
     try {
         if (accesstoken) {
             const result = await axios.default(config)
-            const userId = result.data?.user_profile?.user_id || null
-            requiredId = userId || lowerUID
+            const userId = result.data?.user_profile?.user_id
+            requiredId = userId || lowerUID || null
         }
         if (!lowerUID && !requiredId) return res.status(400).json({ message: 'user id is not provided!!!' })
         const meeting = await db.meeting.findById(meeting_id)
@@ -199,7 +199,7 @@ export const handleFetchMemberAccordingToUserIdMeetingIdJoinCode = async (req: e
             'grpc-metadata-web-api-key': grpcWebKey
         }
     };
-    let requiredId = user_id
+    let requiredId = user_id || null
     try {
         // if (accesstoken) {
         //     const result = await axios.default(config)

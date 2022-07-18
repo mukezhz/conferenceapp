@@ -38,7 +38,7 @@ export const handleGenerateCode = async (req: express.Request, res: express.Resp
         if (accesstoken) {
             const result = await axios.default(config)
             const user_id = result.data?.user_profile?.user_id || null
-            requiredIdentity = user_id || identity
+            requiredIdentity = user_id || identity || null
         }
         if (!requiredIdentity) return res.status(400).json({ message: "user's identity is not provided!!!" })
         const meet = await db.meeting.findById(meeting_id)
@@ -86,8 +86,8 @@ export const handleFindMeetingIdJoinCode = async (req: express.Request, res: exp
     };
     if (!meeting_id) return res.status(400).json({ message: 'meeting id is not provided!!!' })
     else if (!join_code) return res.status(400).json({ message: 'join code is not provided!!!' })
-    let requiredIdentity = identity
-    let requiredName = name
+    let requiredIdentity = identity || null
+    let requiredName = name || null
     try {
         // if (accesstoken) {
         //     const result = await axios.default(config)
