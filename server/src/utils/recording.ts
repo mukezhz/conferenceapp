@@ -86,9 +86,9 @@ export const listEgress = async (ec: livekit.EgressClient, roomName?: string): P
 export const startRoomCompositeEgress = async (ec: livekit.EgressClient, roomName: string, layout: string, output: egress.EncodedFileOutput | egress.StreamOutput, options?: egress.EncodingOptionsPreset | egress.EncodingOptions, audioOnly?: boolean, videoOnly?: boolean, customBaseUrl?: string): Promise<egress.EgressInfo | undefined> => {
     try {
         return await ec.startRoomCompositeEgress(roomName, output, layout, options, audioOnly, videoOnly, customBaseUrl)
-    } catch (e) {
-        console.error(e)
+    } catch (e: any) {
         console.error('[Utils]: error while starting room composite egress!!!')
+        throw (e?.response?.data?.msg)
     }
 }
 
@@ -116,9 +116,9 @@ export const startStreamEgress = async (ec: livekit.EgressClient, platform: stri
     output.urls.push(url)
     try {
         return await startRoomCompositeEgress(ec, roomName, layout, output, options, audioOnly, videoOnly, customBaseUrl)
-    } catch (e) {
-        // console.error(e)
+    } catch (e: any) {
         console.error('[Utils]: error while starting streaming using egress!!!')
+        throw (e as string)
     }
 }
 

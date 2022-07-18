@@ -91,8 +91,8 @@ model Streaming {
 model Egress {
   egress_id  String      @id
   status     String
-  started_at Int
-  ended_at   Int
+  started_at BigInt      @default(0)
+  ended_at   BigInt      @default(0)
   layout     String
   Streaming  Streaming[]
 

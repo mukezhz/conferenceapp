@@ -35,6 +35,18 @@ export const update = async (id: string, data: any) => {
     }
 }
 
+export const updateStatus = async (id: string, status: string) => {
+    try {
+        return await egress.update({
+            where: { egress_id: id, },
+            data: { status: status },
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while updating egress status!!!")
+        throw new Error('error while updating status!!!')
+    }
+}
+
 export const findById = async (id: string) => {
     try {
         return await egress.findUnique({

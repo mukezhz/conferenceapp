@@ -107,7 +107,9 @@ export const handleStopLiveStream = async (req: express.Request, res: express.Re
         const ec = <livekit.EgressClient>util.getEgressClient(livekitHost, apiKey, apiSecret)
         const egressInfo = await util.stopEgress(ec, egressId)
         if (!egressInfo) return res.status(500).json({ message: 'unable to stop streaming!!!' })
-        return res.status(200).json({ message: 'success', egress: JSON.parse(util.toJson(result)) })
+        const egressUpdate = await db.egress.updateStatus(result.egress_id, "ENDED")
+        if (!egressUpdate) return res.status(500).json({ message: "unable to update status" })
+        return res.status(200).json({ message: 'success', data: { steaming: JSON.parse(util.toJson(result)), egress: JSON.parse(util.toJson(egressUpdate)) } })
     } catch (e) {
         console.error(e)
         console.error('[Controller]: error while handling stop live stream!!!')
@@ -142,7 +144,16 @@ export const handleGetStreamInfo = async (req: express.Request, res: express.Res
         else if (!email) res.status(400).json({ message: 'email is not provided!!!' })
         const streamInfos = await db.streaming.findByRoomName(roomName, email)
         if (!streamInfos) return res.status(500).json({ message: 'unable to find stream!!!' })
-        return res.status(200).json({ message: 'success', streams: JSON.parse(util.toJson(streamInfos)) })
+        function asyncMap(arrs: any) {
+            return Promise.all(arrs.map(async (data: any) => {
+                const egressInfo = await db.egress.findById(data?.egress_id)
+                if (!egressInfo) return { ...data, egress: null }
+                return { ...data, egress: egressInfo }
+            }))
+        }
+        const resultWithEgress = await asyncMap(streamInfos)
+        if (!resultWithEgress.length) return res.status(500).json({ message: 'error occur while fetching streaming and egress info!!!' })
+        return res.status(200).json({ message: 'success', streams: JSON.parse(util.toJson(resultWithEgress)) })
     } catch (e) {
         console.error(e)
         console.error('[Controller]: error while handling update stream!!!')
