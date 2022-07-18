@@ -170,8 +170,13 @@ export const handleJoinMeeting = async (req: express.Request, res: express.Respo
         else if (!userId) return res.status(400).json({ message: 'user identity is not provided!!!' })
 
         const search = await db.meeting.findById(meeting_id)
+        if (!search) return res.status(400).json({ message: "meeting doesn't exists!!!" })
         if (search?.status === "ENDED") return res.status(400).json({ message: "meeting has been ended!!!" })
-        if (!search?.room) return res.status(404).json({ message: 'room doesn\'t exists!!!' })
+        if (!search?.room) {
+            const svc = livekit.roomService(url.urls[search.country].replace('wss', 'https'), apiKey, apiSecret)
+            if (!svc) return res.status(500).json({ message: "error while creating room" })
+            await livekit.createRoom(svc, meeting_id, 86400, 100)
+        }
         const update = await db.meeting.updateMetadata(meeting_id, metadata)
         if (!update) return res.status(500).json({ message: "error while updating metadata!!!" })
         const countryCode: string = search.country
