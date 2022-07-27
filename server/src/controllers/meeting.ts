@@ -108,22 +108,25 @@ export const handleUpdateStatus = async (req: express.Request, res: express.Resp
         if (!status) return res.status(400).json({ message: "status has not been provided!!!" })
         const filter = ['NEW', 'CANCELED', 'ENDED'].filter(d => d === upperStatus)
         if (!filter.length) return res.status(400).json({ message: 'status can be either [NEW or CANCELED or ENDED]!!! ' })
-
         const search = await db.meeting.findById(id)
         if (!search) return res.status(400).json({ message: "data doesn't exist with id!!!" })
+        const result = await db.meeting.updateStatus(id, upperStatus)
+        if (!result) return res.status(200).json({ message: "unable to update status!!!" })
         // closing room if status is 'ENDED'
         if (status === 'ENDED' || status === 'CANCELED') {
             const svc = livekit.roomService(url.urls[search.country].replace('wss', 'https'), apiKey, apiSecret)
             if (!svc) return res.status(500).json({ message: "error while creating service!!!" })
-            const room = await svc.listRooms([search?.room])
-            if (room.length) await svc.deleteRoom(search.room)
+            try {
+                const room = await svc.listRooms([search?.room])
+                if (room.length) await svc.deleteRoom(search.room)
+            } catch (e) {
+                console.log("error while closing the room!!!");
+            }
         }
-        const result = await db.meeting.updateStatus(id, upperStatus)
-        if (!result) return res.status(200).json({ message: "unable to update status!!!" })
         return res.json({ message: "success", data: { status: result.status } })
-    } catch (e) {
+    } catch (e: any) {
         console.error(e)
-        return res.status(500).json({ message: 'server error only [NEW, CANCELED, ENDED] are possible!!!' })
+        return res.status(500).json({ message: e?.response?.data?.msg || 'something went wrong!!!' })
     }
 }
 

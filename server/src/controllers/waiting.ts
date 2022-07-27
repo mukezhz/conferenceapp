@@ -71,6 +71,7 @@ export const handleUpdateWaitingStatus = async (req: express.Request, res: expre
             const search = await db.waiting.find(meeting_id, user_id)
             if (!search) return res.status(400).json({ message: "unable to find in waiting!!!" })
             // const result = await db.waiting.updateStatus(meeting_id, user_id, upperStatus)
+            if (search?.status !== 'WAITING') return res.status(400).json({ message: `already ${search.status}`, data: { status: search?.status } })
             let data = {}
             if (upperStatus === 'APPROVED') {
                 if (!search.token) {

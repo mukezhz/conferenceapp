@@ -22,9 +22,8 @@ router.put('/status', m.handleUpdateStatus)
 // update waiting room enabled
 router.put('/waiting', m.handleUpdateWaiting)
 
-router.use('/join/:meeting_id', mw.tokenValidator)
-
 // update waiting room enabled
+router.use('/join/:meeting_id', mw.tokenValidator)
 router.post('/join/:meeting_id', m.handleJoinMeeting)
 
 // generate join code
