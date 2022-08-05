@@ -279,15 +279,34 @@ export const handleSearchActiveMember = async (req: express.Request, res: expres
 }
 
 export const handleAddParticipant = async (req: express.Request, res: express.Response) => {
-    const { participants = {} } = req.body
+    const { identity = '', role = '' } = req.body
     const { meeting_id = "" } = req.params
     try {
         if (!meeting_id) return res.status(400).json({ message: "meeting id is not provided!!!" })
-        else if (!Object.entries(participants)) return res.status(400).json({ message: "participants is not provided!!!" })
-        const meeting = await db.meeting.addParticipant(meeting_id, participants)
-        if (!meeting) return res.status(500).json({ message: "error while updating!!!" })
+        else if (!identity.length || !role.length) return res.status(400).json({ message: "provided argument are not suffient!!!" })
+        if (role?.toUpperCase() === 'HOST') {
+            const meeting = await db.meeting.addParticipant(meeting_id, identity, 'hosts')
+            if (!meeting) res.status(500).json({ message: "error while updating host!!!" })
+        } else if (role?.toUpperCase() === 'MEMBER') {
+            const meeting = await db.meeting.addParticipant(meeting_id, identity, 'members')
+            if (!meeting) return res.status(500).json({ message: "error while updating member!!!" })
+        }
         return res.json({ message: "success" })
     } catch (e) {
         return res.status(500).json({ message: "someting went wrong" })
     }
 }
+
+// export const handleRemoveParticipant = async (req: express.Request, res: express.Response) => {
+//     const { participant = {} } = req.body
+//     const { meeting_id = "" } = req.params
+//     try {
+//         if (!meeting_id) return res.status(400).json({ message: "meeting id is not provided!!!" })
+//         else if (!Object.entries(participant)) return res.status(400).json({ message: "participant is not provided!!!" })
+//         const meeting = await db.meeting.removeParticipant(meeting_id, participant)
+//         if (!meeting) return res.status(500).json({ message: "error while updating!!!" })
+//         return res.json({ message: "success" })
+//     } catch (e) {
+//         return res.status(500).json({ message: "someting went wrong" })
+//     }
+// }

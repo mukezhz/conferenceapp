@@ -4,7 +4,6 @@ import * as cookieParser from 'cookie-parser'
 import * as cors from 'cors'
 import * as router from "./routes"
 import * as mw from "./middlewares"
-import * as c from "./controllers"
 
 
 const app: Express = express();
@@ -20,6 +19,7 @@ app.use(cors({
 
 
 const port = process.env.PORT || 80;
+const host = process.env.HOST || '0.0.0.0'
 
 app.get("/", (req: express.Request, res: express.Response) => {
     return res.status(200).json({ message: 'Hello World!!!' })
@@ -27,6 +27,6 @@ app.get("/", (req: express.Request, res: express.Response) => {
 
 app.use("/api", router.router)
 
-app.listen(port, () => {
+app.listen(Number(port), host, () => {
     console.error("Listening on port ", port);
 })

@@ -39,4 +39,4 @@ router.get('/search/:app_id', m.handleSearchMeeting)
 router.get('/:meeting_id/participants/active', m.handleSearchActiveMember)
 
 // add participats
-router.get('/:meeting_id/add/participants', m.handleAddParticipant)
+router.put('/:meeting_id', m.handleAddParticipant)

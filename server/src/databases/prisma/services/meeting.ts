@@ -106,7 +106,41 @@ export const updateMetadata = async (id: string, metadata: string) => {
     }
 }
 
-export const addParticipant = async (id: string, participants: any) => {
+export const addParticipant = async (id: string, identity: string, role = '') => {
+    try {
+        const uniqueParticipants = await meeting.findUnique({
+            select: {
+                participants: true
+            },
+            where: {
+                id: id
+            }
+        })
+        const temp = { ...uniqueParticipants } as any
+        if (role === 'hosts') {
+            const result = temp?.participants?.hosts?.push(identity)
+            if (!result) temp.participants.hosts = identity
+        }
+        else if (role === 'members') {
+            const result = temp?.participants?.members?.push(identity)
+            if (!result) temp.participants.members = identity
+        }
+
+        return await meeting.update({
+            where: {
+                id: id,
+            },
+            data: {
+                participants: { ...temp?.participants }
+            },
+        })
+    } catch (e: any) {
+        console.error(e, "[service]: error while adding participant meeting!!!")
+        throw new Error('error while adding participant!!!')
+    }
+}
+
+export const removeParticipant = async (id: string, participants: any) => {
     try {
         const uniqueParticipants = meeting.findUnique({
             select: {
